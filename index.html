@@ -54,6 +54,7 @@
       <a href="#map-section">Map</a>
       <a href="#events">Events</a>
       <a href="#about">About</a>
+      <a href="#space">Lease Space</a>
       <a class="btn btn--red" href="submit.html">List Your Business</a>
     </nav>
   </div>
@@ -148,6 +149,63 @@
   </div>
 </section>
 
+<!-- ===== Commercial real estate lead capture (GRID Real Estate) ===== -->
+<section class="section wrap" id="space">
+  <p class="eyebrow">Commercial Real Estate · GRID Real Estate</p>
+  <h2 class="section-title">Space on <span class="script">Lindsey Street?</span></h2>
+  <p style="max-width:62ch">Lindsey Street is one of Norman's most-traveled retail corridors — walkable, OU-adjacent, and always in demand. Looking for a storefront or office, own property here you want to lease or sell, or eyeing the corridor as an investor? GRID Real Estate works this street. Tell us what you need and we'll get right back to you.</p>
+
+  <div id="spaceSuccess" class="form-success" hidden>
+    <strong>Got it! 🎉</strong> A GRID Real Estate advisor will reach out to you shortly.
+  </div>
+
+  <form id="spaceForm" style="margin-top:1.4rem; max-width:720px">
+    <div class="form-grid">
+      <div class="field full">
+        <label for="sp-intent">I'm interested in *</label>
+        <select id="sp-intent" name="intent" required>
+          <option value="" selected disabled>Choose one…</option>
+          <option>Leasing space on Lindsey (tenant)</option>
+          <option>Buying a commercial property here</option>
+          <option>I own property here — lease it out or sell</option>
+          <option>Investing in the Lindsey corridor</option>
+          <option>Property management for my building</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="sp-name">Name *</label>
+        <input id="sp-name" name="name" required>
+      </div>
+      <div class="field">
+        <label for="sp-phone">Phone</label>
+        <input id="sp-phone" name="phone" type="tel" placeholder="(405) 555-0100">
+      </div>
+      <div class="field full">
+        <label for="sp-email">Email *</label>
+        <input id="sp-email" name="email" type="email" required>
+      </div>
+      <div class="field full">
+        <label for="sp-business">Business or property <span style="font-weight:normal;opacity:.6">(optional)</span></label>
+        <input id="sp-business" name="business" placeholder="What you run, or the address you own">
+      </div>
+      <div class="field full">
+        <label for="sp-message">Anything else</label>
+        <textarea id="sp-message" name="message" placeholder="Size, timing, budget — whatever helps…"></textarea>
+      </div>
+      <div class="field full">
+        <label style="display:flex; gap:.5rem; align-items:flex-start; font-weight:normal; font-size:.85rem; cursor:pointer">
+          <input type="checkbox" name="sms_consent" value="yes" style="width:auto; margin-top:.2rem">
+          <span>Text me about this. Msg &amp; data rates may apply; reply STOP to opt out. Consent isn't a condition of any service.</span>
+        </label>
+      </div>
+    </div>
+    <div style="margin-top:1.4rem; display:flex; gap:.8rem; flex-wrap:wrap; align-items:center;">
+      <button class="btn btn--red" type="submit">Get in touch</button>
+      <span class="form-note" style="margin:0">Represented by GRID Real Estate · <a href="https://thegridre.com" target="_blank" rel="noopener">thegridre.com ↗</a></span>
+    </div>
+  </form>
+</section>
+
 <!-- ===== Footer ===== -->
 <footer class="site-footer">
   <div class="wrap footer-grid">
@@ -170,6 +228,7 @@
     <div>
       <h4>Get Listed</h4>
       <a href="submit.html">List Your Business</a>
+      <a href="#space">Lease or list space</a>
       <a href="https://www.instagram.com/lindseystreetdistrict" target="_blank" rel="noopener">Instagram ↗</a>
     </div>
   </div>

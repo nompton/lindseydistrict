@@ -195,16 +195,89 @@
   const yr = $("#year");
   if (yr) yr.textContent = new Date().getFullYear();
 
-  /* ---------- submit form (front-end only demo) ---------- */
+  /* ---------- lead capture → GRID Real Estate (ATLAS) ----------
+     Every business that lists, and every space/commercial inquiry, becomes a
+     tagged lead in GRID's CRM. Lindsey Street is a prime commercial corridor,
+     so the district directory doubles as a top-of-funnel for GRID's commercial
+     real estate + property management business. */
+  const LEAD_ENDPOINT = "https://portal.thegridre.com/api/public/contact/submit";
+  async function postLead(payload) {
+    const res = await fetch(LEAD_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ site: "Lindsey District", ...payload }),
+    });
+    if (!res.ok) throw new Error();
+  }
+
+  // "List your business" — a directory signup is also a warm commercial contact.
   const form = $("#submitForm");
   if (form) {
-    form.addEventListener("submit", (e) => {
-      // If no real action endpoint is set, do a friendly demo confirmation.
-      if (!form.getAttribute("action") || form.getAttribute("action") === "#") {
-        e.preventDefault();
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      const d = Object.fromEntries(new FormData(form).entries());
+      if (btn) { btn.disabled = true; btn.textContent = "Submitting…"; }
+      try {
+        await postLead({
+          lead_type: "directory",
+          interest: "business-listing",
+          subject: "Lindsey District directory listing",
+          name: d.business_name,
+          email: d.email,
+          phone: d.phone,
+          address: d.address,
+          message: [
+            d.category && `Category: ${d.category}`,
+            d.shopping_center && `Center: ${d.shopping_center}`,
+            d.website && `Web: ${d.website}`,
+            d.instagram && `IG: ${d.instagram}`,
+            d.description,
+          ].filter(Boolean).join(" · "),
+        });
         const ok = $("#formSuccess");
         if (ok) { ok.hidden = false; ok.scrollIntoView({ behavior: "smooth", block: "center" }); }
         form.reset();
+        if (btn) btn.textContent = "Submitted ✓";
+      } catch {
+        if (btn) { btn.disabled = false; btn.textContent = "Submit Listing"; }
+        alert("Something went wrong — please email hello@lindseydistrict.com and we'll add you.");
+      }
+    });
+  }
+
+  // "Space on Lindsey" — GRID commercial real estate lead capture (tenant /
+  // landlord-seller / investor), routed by intent.
+  const sform = $("#spaceForm");
+  if (sform) {
+    sform.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = sform.querySelector('button[type="submit"]');
+      const d = Object.fromEntries(new FormData(sform).entries());
+      const intent = d.intent || "";
+      const leadType = /own|list|lease out|sell|landlord/i.test(intent) ? "seller" : "buyer";
+      if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
+      try {
+        await postLead({
+          lead_type: leadType,
+          interest: "commercial",
+          subject: "Lindsey Street commercial inquiry",
+          name: d.name,
+          email: d.email,
+          phone: d.phone,
+          sms_consent: d.sms_consent || "",
+          message: [
+            intent && `Interest: ${intent}`,
+            d.business && `Business/property: ${d.business}`,
+            d.message,
+          ].filter(Boolean).join(" · "),
+        });
+        const ok = $("#spaceSuccess");
+        if (ok) { ok.hidden = false; ok.scrollIntoView({ behavior: "smooth", block: "center" }); }
+        sform.reset();
+        if (btn) btn.textContent = "Sent ✓";
+      } catch {
+        if (btn) { btn.disabled = false; btn.textContent = "Get in touch"; }
       }
     });
   }

@@ -281,4 +281,72 @@
       }
     });
   }
+
+  // "Live in the district" — residential renter/buyer capture. Rent intents
+  // route as renter leads, buy intents as buyer leads.
+  const lform = $("#liveForm");
+  if (lform) {
+    lform.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = lform.querySelector('button[type="submit"]');
+      const d = Object.fromEntries(new FormData(lform).entries());
+      const buying = /buy/i.test(d.intent || "");
+      if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
+      try {
+        await postLead({
+          lead_type: buying ? "buyer" : "renter",
+          interest: buying ? "buying" : "renting",
+          subject: "Live in Lindsey District inquiry",
+          name: d.name,
+          email: d.email,
+          phone: d.phone,
+          sms_consent: d.sms_consent || "",
+          message: [
+            d.intent && `Looking to: ${d.intent}`,
+            d.beds && `Beds: ${d.beds}`,
+            d.message,
+          ].filter(Boolean).join(" · "),
+        });
+        const ok = $("#liveSuccess");
+        if (ok) { ok.hidden = false; ok.scrollIntoView({ behavior: "smooth", block: "center" }); }
+        lform.reset();
+        if (btn) btn.textContent = "Sent ✓";
+      } catch {
+        if (btn) { btn.disabled = false; btn.textContent = "Find my place"; }
+      }
+    });
+  }
+
+  // "Let GRID run the back office" — apartment community / property-owner PM
+  // pitch. The lead is a management prospect (seller-side) for GRID.
+  const mform = $("#manageForm");
+  if (mform) {
+    mform.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = mform.querySelector('button[type="submit"]');
+      const d = Object.fromEntries(new FormData(mform).entries());
+      if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
+      try {
+        await postLead({
+          lead_type: "seller",
+          interest: "property-management",
+          subject: "Apartment / property management inquiry",
+          name: d.name,
+          email: d.email,
+          phone: d.phone,
+          message: [
+            d.community && `Community/property: ${d.community}`,
+            d.units && `Units: ${d.units}`,
+            d.message,
+          ].filter(Boolean).join(" · "),
+        });
+        const ok = $("#manageSuccess");
+        if (ok) { ok.hidden = false; ok.scrollIntoView({ behavior: "smooth", block: "center" }); }
+        mform.reset();
+        if (btn) btn.textContent = "Sent ✓";
+      } catch {
+        if (btn) { btn.disabled = false; btn.textContent = "Request a proposal"; }
+      }
+    });
+  }
 })();

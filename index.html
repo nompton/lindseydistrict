@@ -53,7 +53,7 @@
       <a href="#directory">Directory</a>
       <a href="#map-section">Map</a>
       <a href="#events">Events</a>
-      <a href="#about">About</a>
+      <a href="#live">Live Here</a>
       <a href="#space">Lease Space</a>
       <a class="btn btn--red" href="submit.html">List Your Business</a>
     </nav>
@@ -137,6 +137,69 @@
 </section>
 
 <!-- ===== Get listed band ===== -->
+<!-- ===== Live in the district (residential renter/buyer lead capture) ===== -->
+<section class="section wrap" id="live">
+  <p class="eyebrow">For Residents</p>
+  <h2 class="section-title">Live in the <span class="script">Lindsey District</span></h2>
+  <p style="max-width:62ch">Walkable, minutes from OU, and packed with everything you need day to day — the Lindsey Street area is one of Norman's easiest places to call home. Whether you're after an apartment, a rental house, student housing, or a place to buy, GRID Real Estate will match you to the right spot in the district.</p>
+
+  <div id="liveSuccess" class="form-success" hidden>
+    <strong>Got it! 🎉</strong> A GRID Real Estate agent will reach out with places that fit.
+  </div>
+
+  <form id="liveForm" style="margin-top:1.4rem; max-width:720px">
+    <div class="form-grid">
+      <div class="field full">
+        <label for="lv-intent">I'm looking to *</label>
+        <select id="lv-intent" name="intent" required>
+          <option value="" selected disabled>Choose one…</option>
+          <option>Rent an apartment near Lindsey</option>
+          <option>Rent a house near Lindsey</option>
+          <option>Find student housing near OU</option>
+          <option>Buy a home near Lindsey</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="lv-beds">Bedrooms</label>
+        <select id="lv-beds" name="beds">
+          <option value="">Any</option>
+          <option>Studio</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4+</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="lv-phone">Phone</label>
+        <input id="lv-phone" name="phone" type="tel" placeholder="(405) 555-0100">
+      </div>
+      <div class="field">
+        <label for="lv-name">Name *</label>
+        <input id="lv-name" name="name" required>
+      </div>
+      <div class="field">
+        <label for="lv-email">Email *</label>
+        <input id="lv-email" name="email" type="email" required>
+      </div>
+      <div class="field full">
+        <label for="lv-message">What you're after</label>
+        <textarea id="lv-message" name="message" placeholder="Budget, move-in timing, must-haves…"></textarea>
+      </div>
+      <div class="field full">
+        <label style="display:flex; gap:.5rem; align-items:flex-start; font-weight:normal; font-size:.85rem; cursor:pointer">
+          <input type="checkbox" name="sms_consent" value="yes" style="width:auto; margin-top:.2rem">
+          <span>Text me about places. Msg &amp; data rates may apply; reply STOP to opt out. Consent isn't a condition of any service.</span>
+        </label>
+      </div>
+    </div>
+    <div style="margin-top:1.4rem; display:flex; gap:.8rem; flex-wrap:wrap; align-items:center;">
+      <button class="btn btn--red" type="submit">Find my place</button>
+      <span class="form-note" style="margin:0">Matched by GRID Real Estate · <a href="https://thegridre.com" target="_blank" rel="noopener">thegridre.com ↗</a></span>
+    </div>
+  </form>
+</section>
+
 <section class="section band" id="get-listed">
   <div class="wrap band-grid">
     <div>
@@ -204,6 +267,58 @@
       <span class="form-note" style="margin:0">Represented by GRID Real Estate · <a href="https://thegridre.com" target="_blank" rel="noopener">thegridre.com ↗</a></span>
     </div>
   </form>
+</section>
+
+<!-- ===== Property owners / apartment communities (property-management pitch) ===== -->
+<section class="section section--blush" id="manage">
+  <div class="wrap">
+    <p class="eyebrow">For Property Owners &amp; Apartment Communities</p>
+    <h2 class="section-title">Let GRID run the <span class="script">back office</span></h2>
+    <p style="max-width:64ch">Own or manage rentals near Lindsey? GRID Real Estate runs the whole backend on the same platform that powers this directory — online leasing and applications, maintenance requests and vendor coordination, rent collection and trust accounting, and clean owner reporting. Less busywork for you, a better experience for your residents, and your vacancies marketed across our Norman lead network.</p>
+    <ul style="margin:1rem 0 0; padding:0; list-style:none; display:grid; gap:.4rem; max-width:64ch; font-size:.92rem">
+      <li>· Online applications, screening &amp; e-signed leases</li>
+      <li>· Maintenance intake, dispatch &amp; tracking</li>
+      <li>· Rent collection, trust accounting &amp; owner statements</li>
+      <li>· Your vacancies marketed across our Norman lead network</li>
+    </ul>
+
+    <div id="manageSuccess" class="form-success" hidden>
+      <strong>Thanks! 🎉</strong> We'll reach out to set up a walkthrough and a management proposal.
+    </div>
+
+    <form id="manageForm" style="margin-top:1.4rem; max-width:720px">
+      <div class="form-grid">
+        <div class="field full">
+          <label for="mg-community">Community / property</label>
+          <input id="mg-community" name="community" placeholder="Name or address">
+        </div>
+        <div class="field">
+          <label for="mg-units">Units</label>
+          <input id="mg-units" name="units" placeholder="e.g. 24">
+        </div>
+        <div class="field">
+          <label for="mg-name">Your name *</label>
+          <input id="mg-name" name="name" required>
+        </div>
+        <div class="field">
+          <label for="mg-phone">Phone</label>
+          <input id="mg-phone" name="phone" type="tel" placeholder="(405) 555-0100">
+        </div>
+        <div class="field">
+          <label for="mg-email">Email *</label>
+          <input id="mg-email" name="email" type="email" required>
+        </div>
+        <div class="field full">
+          <label for="mg-message">Anything else</label>
+          <textarea id="mg-message" name="message" placeholder="What you're managing today, and what's not working…"></textarea>
+        </div>
+      </div>
+      <div style="margin-top:1.4rem; display:flex; gap:.8rem; flex-wrap:wrap; align-items:center;">
+        <button class="btn btn--red" type="submit">Request a proposal</button>
+        <span class="form-note" style="margin:0">Property management by GRID Real Estate · <a href="https://thegridre.com" target="_blank" rel="noopener">thegridre.com ↗</a></span>
+      </div>
+    </form>
+  </div>
 </section>
 
 <!-- ===== Footer ===== -->

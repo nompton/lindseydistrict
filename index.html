@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lindsey Street District — Norman's Walkable Live · Work · Play District</title>
+<meta name="description" content="The official business directory of the Historic Lindsey Street District in Norman, Oklahoma. Find local places to eat, shop, and get things done — all along Lindsey Street. Good times await.">
+<link rel="canonical" href="https://lindseydistrict.com/">
+
+<meta property="og:title" content="Lindsey Street District — Norman, OK">
+<meta property="og:description" content="Norman's favorite walkable live + work + play district. Browse the local business directory. Good times await.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lindseydistrict.com/">
+<meta property="og:image" content="https://lindseydistrict.com/assets/good-times-await.png">
+<meta name="theme-color" content="#141414">
+
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700&family=Yellowtail&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="stylesheet" href="css/styles.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Lindsey Street District",
+  "description": "The Historic Lindsey Street District — Norman's walkable live, work, and play district.",
+  "url": "https://lindseydistrict.com/",
+  "areaServed": "Norman, Oklahoma",
+  "sameAs": ["https://www.instagram.com/lindseystreetdistrict"]
+}
+</script>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="#top" aria-label="Lindsey Street District home">
+      <img class="brand-badge" src="assets/badge-transparent.png" alt="Historic Lindsey Street District, Norman OK badge" width="52" height="52">
+      <span class="brand-word">
+        <span class="l1">Lindsey</span>
+        <span class="l2">STREET DISTRICT</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="nav-links">
+      <a href="#directory">Directory</a>
+      <a href="#map-section">Map</a>
+      <a href="#events">Events</a>
+      <a href="#about">About</a>
+      <a class="btn btn--red" href="submit.html">List Your Business</a>
+    </nav>
+  </div>
+</header>
+
+<span id="top"></span>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="wrap hero-inner">
+    <img class="hero-badge" src="assets/badge-transparent.png" alt="Historic Lindsey Street District badge" width="128" height="128">
+    <h1><span class="script">Historic</span>Lindsey Street</h1>
+    <p class="tagline">Norman's favorite walkable <strong>live + work + play</strong> district. Your guide to the shops, eats, and everyday essentials all along Lindsey Street. Good times await.</p>
+    <div class="hero-cta">
+      <a class="btn btn--red" href="#directory">Explore the Directory</a>
+      <a class="btn btn--ghost" href="#map-section">See the Map</a>
+    </div>
+  </div>
+  <div class="hero-strip">
+    <span>★ EAT</span><span>★ SHOP</span><span>★ SERVICES</span><span>★ WELLNESS</span><span>★ GATHER</span>
+  </div>
+</section>
+
+<!-- ===== About / gateway ===== -->
+<section class="section wrap" id="about">
+  <div class="about-grid">
+    <div>
+      <p class="eyebrow">The Gateway to Norman</p>
+      <h2 class="section-title">Where Norman comes to <span class="script">gather</span></h2>
+      <p style="font-size:1.1rem;">Running west from the University of Oklahoma, Lindsey Street is one of Norman's busiest and most beloved corridors — a walkable stretch of local restaurants, salons, shops, fitness studios, and neighborhood staples. This is your guide to everything on the street.</p>
+      <div class="stats">
+        <div class="stat"><div class="num" id="statTotal">—</div><div class="lbl">Local Spots</div></div>
+        <div class="stat"><div class="num" id="statCats">—</div><div class="lbl">Categories</div></div>
+        <div class="stat"><div class="num">1.5<span style="font-size:1.2rem">mi</span></div><div class="lbl">Walkable Street</div></div>
+        <div class="stat"><div class="num" style="color:var(--gold-dark)">★★★</div><div class="lbl">Good Times</div></div>
+      </div>
+    </div>
+    <figure class="about-art">
+      <img src="assets/good-times-await.png" alt="Historic Lindsey Street District — Good Times Await, the gateway to Norman">
+    </figure>
+  </div>
+</section>
+
+<!-- ===== Directory ===== -->
+<section class="section section--blush" id="directory">
+  <div class="wrap">
+    <div class="dir-head">
+      <div>
+        <p class="eyebrow">The Directory</p>
+        <h2 class="section-title">Browse <span id="dirCount">—</span> local spots</h2>
+      </div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="dirSearch" type="search" placeholder="Search businesses…" aria-label="Search businesses">
+      </div>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
+    <div class="dir-grid" id="dirGrid"></div>
+  </div>
+</section>
+
+<!-- ===== Map ===== -->
+<section class="section wrap" id="map-section">
+  <p class="eyebrow">Find Your Way</p>
+  <h2 class="section-title">The <span class="script">map</span> of the district</h2>
+  <p style="max-width:660px; margin-bottom:1.2rem;">Every pin is a spot along Lindsey Street. Tap a marker for details, then walk the street and take it all in.</p>
+  <div id="map"></div>
+  <p class="map-note">📍 Pin locations are approximate, placed automatically by street address. Exact coordinates can be added per business.</p>
+</section>
+
+<!-- ===== Events ===== -->
+<section class="section section--blush" id="events">
+  <div class="wrap">
+    <p class="eyebrow">On the Street</p>
+    <h2 class="section-title">Upcoming <span class="script">events</span></h2>
+    <p style="max-width:640px; margin-bottom:1.6rem;">Block parties, sidewalk strolls, live music, and seasonal celebrations. Follow along on Instagram so you never miss a good time.</p>
+    <div class="events" id="eventsList"></div>
+    <p style="margin-top:1.4rem;"><a class="btn btn--outline" href="https://www.instagram.com/lindseystreetdistrict" target="_blank" rel="noopener">Follow @lindseystreetdistrict</a></p>
+  </div>
+</section>
+
+<!-- ===== Get listed band ===== -->
+<section class="section band" id="get-listed">
+  <div class="wrap band-grid">
+    <div>
+      <p class="eyebrow" style="color:#cdeeff">For Business Owners</p>
+      <h2 class="section-title">Are you on <span class="script" style="color:var(--gold)">Lindsey Street?</span></h2>
+      <p>Get listed in the district directory — free for local businesses on and around Lindsey Street. Reach the neighbors, students, and visitors already looking for what you offer.</p>
+      <a class="btn btn--red" href="submit.html">List Your Business</a>
+    </div>
+    <img class="band-art" src="assets/lindsey-post.png" alt="Visit Historic Lindsey Street District retro sign">
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <img class="footer-badge" src="assets/badge-transparent.png" alt="Lindsey Street District badge" width="72" height="72">
+      <p>Norman's favorite walkable live + work + play district. A guide to the local spots that make Lindsey Street special.</p>
+      <div class="social">
+        <a href="https://www.instagram.com/lindseystreetdistrict" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+      </div>
+    </div>
+    <div>
+      <h4>Explore</h4>
+      <a href="#directory">Directory</a>
+      <a href="#map-section">Map</a>
+      <a href="#events">Events</a>
+      <a href="#about">About the District</a>
+    </div>
+    <div>
+      <h4>Get Listed</h4>
+      <a href="submit.html">List Your Business</a>
+      <a href="https://www.instagram.com/lindseystreetdistrict" target="_blank" rel="noopener">Instagram ↗</a>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    © <span id="year">2026</span> Lindsey Street District · Norman, Oklahoma · Made for the neighborhood.
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

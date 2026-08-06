@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lindseydistrict.com/sitemap.xml

@@ -201,11 +201,12 @@
      so the district directory doubles as a top-of-funnel for GRID's commercial
      real estate + property management business. */
   const LEAD_ENDPOINT = "https://portal.thegridre.com/api/public/contact/submit";
+  const GRID_SITE_KEY = "150d6505d2c0416481881cf6e24f6937";
   async function postLead(payload) {
     const res = await fetch(LEAD_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ site: "Lindsey District", ...payload }),
+      body: JSON.stringify({ site: "Lindsey District", site_key: GRID_SITE_KEY, ...payload }),
     });
     if (!res.ok) throw new Error();
   }

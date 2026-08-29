@@ -240,6 +240,35 @@ h1, h2, h3 { line-height: 1.05; margin: 0 0 .5rem; }
 .card-links a { font-family: var(--font-display); letter-spacing: .05em; text-transform: uppercase; font-size: .95rem; color: var(--red-dark); }
 .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 1.1rem; grid-column: 1/-1; }
 
+/* ---------- District Deals (email-unlock) ---------- */
+.deals-wrap { position: relative; margin-top: 1.6rem; min-height: 260px; }
+.deals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.3rem; transition: filter .25s ease; }
+.deals-wrap.is-locked .deals-grid { filter: blur(8px); pointer-events: none; user-select: none; }
+.deals-lock { display: none; }
+.deals-wrap.is-locked .deals-lock {
+  display: grid; place-items: center; position: absolute; inset: 0; padding: 1rem;
+}
+.deals-lock-card {
+  background: var(--cream); border: 2px solid var(--charcoal); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 1.9rem 1.8rem; max-width: 460px; text-align: center;
+}
+.deals-lock-card .lock-icon { font-size: 2.1rem; line-height: 1; }
+.deals-lock-card h3 { font-family: var(--font-slab); color: var(--charcoal); font-size: 1.35rem; margin: .3rem 0 0; }
+.deals-lock-card .signup { justify-content: center; }
+.deals-lock-card .signup input[type="email"] { border-color: var(--cream-2); }
+.deal-card {
+  background: var(--cream); border: 2px dashed var(--red); border-radius: var(--radius);
+  padding: 1.3rem 1.2rem 1.1rem; position: relative; box-shadow: var(--shadow-sm);
+}
+.deal-tag {
+  position: absolute; top: -.72rem; left: 1.1rem; background: var(--red); color: var(--cream);
+  font-family: var(--font-display); letter-spacing: .1em; font-size: .85rem; padding: 2px 11px; border-radius: 999px;
+}
+.deal-card h3 { font-family: var(--font-slab); font-size: 1.18rem; color: var(--charcoal); margin: .3rem 0 .25rem; }
+.deal-biz { font-family: var(--font-display); letter-spacing: .06em; color: var(--teal-dark); font-size: 1.05rem; }
+.deal-details { color: var(--muted); font-size: .92rem; margin: .5rem 0 .6rem; }
+.deal-exp { font-size: .8rem; color: var(--red-dark); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+
 /* ---------- Map ---------- */
 #map { height: 460px; border-radius: var(--radius); border: 3px solid var(--charcoal); box-shadow: var(--shadow); z-index: 1; }
 .map-note { margin-top: .9rem; font-size: .9rem; color: var(--muted); }

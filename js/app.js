@@ -166,6 +166,27 @@
       </div>`).join("");
   }
 
+  /* ---------- district deals (email-unlock incentive) ---------- */
+  const dealsGrid = $("#dealsGrid");
+  if (dealsGrid && typeof DEALS !== "undefined") {
+    dealsGrid.innerHTML = DEALS.map((d) => `
+      <article class="deal-card">
+        <span class="deal-tag">Deal</span>
+        <h3>${esc(d.offer)}</h3>
+        <div class="deal-biz">${esc(d.business)}</div>
+        ${d.details ? `<p class="deal-details">${esc(d.details)}</p>` : ""}
+        ${d.expires ? `<div class="deal-exp">Valid through ${esc(d.expires)}</div>` : ""}
+      </article>`).join("");
+  }
+  const dealsWrap = $("#dealsWrap");
+  function dealsAreUnlocked() { try { return localStorage.getItem("lsd_deals") === "1"; } catch { return false; } }
+  function unlockDeals() {
+    try { localStorage.setItem("lsd_deals", "1"); } catch {}
+    if (dealsWrap) dealsWrap.classList.remove("is-locked");
+  }
+  // Returning subscribers see deals already unlocked (no flash of locked state).
+  if (dealsWrap && dealsAreUnlocked()) dealsWrap.classList.remove("is-locked");
+
   /* ---------- map (Leaflet) ---------- */
   const mapEl = $("#map");
   if (mapEl && window.L) {
@@ -363,21 +384,24 @@
         if (input) input.focus();
         return;
       }
+      const interest = nf.dataset.interest || "newsletter";
       const btn = nf.querySelector('button[type="submit"]');
       const original = btn ? btn.textContent : "";
       if (btn) { btn.disabled = true; btn.textContent = "Subscribing…"; }
       try {
         await postLead({
           lead_type: "newsletter",
-          interest: "newsletter",
-          subject: "Lindsey List signup",
+          interest: interest,
+          subject: interest === "deals" ? "Lindsey List — deals unlock" : "Lindsey List signup",
           email: email,
-          message: "Newsletter subscriber via lindseydistrict.com",
+          message: "Newsletter subscriber via lindseydistrict.com" + (interest === "deals" ? " (deals unlock)" : ""),
         });
         const ok = nf.parentElement && nf.parentElement.querySelector(".form-success");
         if (ok) ok.hidden = false;
         nf.reset();
         nf.hidden = true;
+        // Subscribing anywhere on the site unlocks the district deals.
+        unlockDeals();
       } catch {
         if (btn) { btn.disabled = false; btn.textContent = original || "Subscribe"; }
         alert("Hmm, that didn't go through — please try again in a moment.");

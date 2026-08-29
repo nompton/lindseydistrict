@@ -159,6 +159,21 @@ const BUSINESSES = [
   {"name": "Bethel Baptist Church", "category": "worship", "address": "1717 W Lindsey, Norman, OK"}
 ];
 
+/* ---------------------------------------------------------
+   District Deals — the email "unlock" incentive.
+   ⚠️ THESE ARE PLACEHOLDERS. Replace with REAL offers that the
+   business has agreed to. Never publish a deal for a named
+   business unless they've approved it. Add/remove freely.
+   --------------------------------------------------------- */
+const DEALS = [
+  { business: "Sample Coffee Co.",   offer: "$1 off any espresso drink", details: "Show this screen at the counter.", expires: "this month" },
+  { business: "District Diner",       offer: "Free appetizer with 2 entrées", details: "Dine-in only. One per table.", expires: "this month" },
+  { business: "Lindsey Threads",      offer: "15% off your purchase",     details: "Mention the Lindsey List.",       expires: "this month" },
+  { business: "Corner Barber",        offer: "$5 off a cut",              details: "New clients. By appointment.",    expires: "this month" },
+  { business: "Sunset Yoga",          offer: "First class free",          details: "New students only.",              expires: "this month" },
+  { business: "Main Street Sweets",   offer: "Buy one, get one 50% off",  details: "Show this screen to redeem.",     expires: "this month" },
+];
+
 /* Upcoming district events — edit freely. */
 const EVENTS = [
   {"month": "AUG", "day": "16", "title": "First Friday Sidewalk Stroll", "when": "Fri · 6–9pm", "desc": "Shops stay open late with sidewalk sales, live music, and food trucks along Lindsey."},

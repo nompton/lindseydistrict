@@ -274,6 +274,37 @@ h1, h2, h3 { line-height: 1.05; margin: 0 0 .5rem; }
 .band p { max-width: 520px; margin: .4rem 0 1.4rem; color: #e6f5f3; }
 .band-art { width: 100%; border-radius: var(--radius); box-shadow: var(--shadow); }
 
+/* ---------- Newsletter: Get the Lindsey List ---------- */
+.band--gold {
+  background:
+    linear-gradient(180deg, var(--gold), #d3b23c),
+    repeating-linear-gradient(135deg, #e0c14e 0 28px, #d8b840 28px 56px);
+  color: var(--charcoal);
+}
+.band--gold .section-title { color: var(--charcoal); }
+.band--gold p { color: #4c3f18; max-width: 46ch; margin: .3rem 0 0; }
+.newsletter { display: grid; grid-template-columns: 1.1fr .9fr; gap: 2rem 2.6rem; align-items: center; }
+.signup { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .2rem; }
+.signup input[type="email"] {
+  flex: 1 1 220px; min-width: 0; font: inherit;
+  padding: .8rem 1.1rem; border-radius: 999px;
+  border: 2px solid rgba(20,20,20,.18); background: var(--paper); color: var(--ink);
+}
+.signup input[type="email"]:focus { outline: none; border-color: var(--charcoal); }
+.signup .btn { flex: none; }
+.signup-note { font-size: .82rem; margin: .7rem 0 0; color: #4c3f18; opacity: .85; }
+
+/* footer signup */
+.footer-signup {
+  display: flex; gap: 1.4rem 2rem; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; margin-top: 2.4rem; padding-top: 1.6rem;
+  border-top: 1px solid rgba(247,240,225,.15);
+}
+.footer-signup h4 { font-family: var(--font-display); letter-spacing: .12em; color: var(--gold); font-size: 1.2rem; margin: 0 0 .2rem; }
+.footer-signup p { color: #d9cdbd; margin: 0; font-size: .92rem; }
+.footer-signup-form { flex: 1 1 340px; max-width: 440px; }
+.footer-signup-form .signup-note { color: #b7ab9d; }
+
 /* ---------- Form ---------- */
 .form-card {
   background: var(--cream); border: 1px solid var(--cream-2); border-radius: var(--radius);

@@ -350,4 +350,38 @@
       }
     });
   }
+
+  // "Get the Lindsey List" — consumer newsletter capture. Builds an owned
+  // audience (deals + events) and lands in the CRM tagged as a newsletter
+  // subscriber. One handler serves every .js-newsletter form on the page.
+  $$("form.js-newsletter").forEach((nf) => {
+    nf.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const input = nf.querySelector('input[type="email"]');
+      const email = (input && input.value || "").trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (input) input.focus();
+        return;
+      }
+      const btn = nf.querySelector('button[type="submit"]');
+      const original = btn ? btn.textContent : "";
+      if (btn) { btn.disabled = true; btn.textContent = "Subscribing…"; }
+      try {
+        await postLead({
+          lead_type: "newsletter",
+          interest: "newsletter",
+          subject: "Lindsey List signup",
+          email: email,
+          message: "Newsletter subscriber via lindseydistrict.com",
+        });
+        const ok = nf.parentElement && nf.parentElement.querySelector(".form-success");
+        if (ok) ok.hidden = false;
+        nf.reset();
+        nf.hidden = true;
+      } catch {
+        if (btn) { btn.disabled = false; btn.textContent = original || "Subscribe"; }
+        alert("Hmm, that didn't go through — please try again in a moment.");
+      }
+    });
+  });
 })();

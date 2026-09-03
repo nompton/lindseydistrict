@@ -1,45 +1,55 @@
 #!/usr/bin/env python3
 """
-Prerender build for lindseydistrict.com
----------------------------------------
-Produces a deployable ./dist with the directory baked into static HTML for SEO.
+SEO prerender for lindseydistrict.com — bakes the directory into index.html.
+------------------------------------------------------------------------------
+Renders the REAL app.js / data.js in headless Chrome, then writes the generated
+cards + JSON-LD directly into index.html (between HTML markers). This keeps ONE
+source of truth (app.js) so the static HTML can never drift, and — because the
+result is committed — EVERY deploy path (Cloudflare auto-deploy on git push, or
+manual wrangler) serves the fully static, crawlable directory.
 
-How it works: it loads the real index.html in headless Chrome so the actual
-app.js / data.js render the cards + JSON-LD, extracts that output, and injects
-it into dist/index.html. This keeps ONE source of truth (app.js) — the static
-HTML can never drift from the live renderer.
+Idempotent: it first resets the marked regions to empty, so re-running always
+reflects the current data.js.
 
-Usage:  python3 build.py         # writes ./dist
-Then deploy ./dist (see README / deploy command).
-Re-run after editing js/data.js so the static output stays current.
+Usage:  python3 build.py        # updates index.html in place
+Re-run after editing js/data.js, then commit + push (auto-deploys).
 """
-import os, re, sys, json, html, shutil, subprocess, time, http.server, socketserver, threading
+import os, re, sys, json, html, subprocess, http.server, socketserver, threading
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-DIST = os.path.join(ROOT, "dist")
 PORT = 8799
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-COPY = ["assets", "css", "js", "submit.html", "404.html", "robots.txt", "sitemap.xml"]
 
 def log(m): print(f"[build] {m}")
 
+def reset(src):
+    src = re.sub(r'<!--FEAT:START-->.*?<!--FEAT:END-->',
+                 '<!--FEAT:START--><div class="dir-grid" id="featuredGrid"></div><!--FEAT:END-->', src, flags=re.S)
+    src = re.sub(r'<!--DIR:START-->.*?<!--DIR:END-->',
+                 '<!--DIR:START--><div class="dir-grid" id="dirGrid"></div><!--DIR:END-->', src, flags=re.S)
+    src = re.sub(r'<!--LD:START-->.*?<!--LD:END-->', '<!--LD:START--><!--LD:END-->', src, flags=re.S)
+    src = re.sub(r'<span id="dirCount">[^<]*</span>', '<span id="dirCount">—</span>', src)
+    return src
+
 def serve():
     os.chdir(ROOT)
-    handler = http.server.SimpleHTTPRequestHandler
-    httpd = socketserver.TCPServer(("127.0.0.1", PORT), handler)
-    t = threading.Thread(target=httpd.serve_forever, daemon=True)
-    t.start()
+    httpd = socketserver.TCPServer(("127.0.0.1", PORT), http.server.SimpleHTTPRequestHandler)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
     return httpd
 
 def main():
     if not os.path.exists(CHROME):
         log(f"ERROR: Chrome not found at {CHROME}"); sys.exit(1)
 
-    src = open(os.path.join(ROOT, "index.html")).read()
+    index = os.path.join(ROOT, "index.html")
+    clean = reset(open(index).read())
+    for marker in ("<!--FEAT:START-->", "<!--DIR:START-->", "<!--LD:START-->"):
+        if marker not in clean:
+            log(f"ERROR: missing marker {marker} in index.html"); sys.exit(1)
 
-    # 1) temp page: strip external Leaflet (avoid network) + append an extractor
-    pre = re.sub(r'<script src="https://unpkg\.com/leaflet[^>]*></script>\s*', "", src)
-    extractor = """
+    # temp render page: strip external Leaflet (no network) + append extractor
+    pre = re.sub(r'<script src="https://unpkg\.com/leaflet[^>]*></script>\s*', "", clean)
+    pre = pre.replace("</body>", """
 <script>
 window.addEventListener('load', function () {
   var out = {
@@ -51,14 +61,11 @@ window.addEventListener('load', function () {
   document.querySelectorAll('script[type="application/ld+json"]').forEach(function (s) {
     if (s.textContent.indexOf('"ItemList"') > -1) out.ld = s.textContent;
   });
-  var t = document.createElement('textarea');
-  t.id = '__pre';
-  t.textContent = JSON.stringify(out);
-  document.body.appendChild(t);
+  var t = document.createElement('textarea'); t.id = '__pre';
+  t.textContent = JSON.stringify(out); document.body.appendChild(t);
 });
 </script>
-"""
-    pre = pre.replace("</body>", extractor + "\n</body>")
+</body>""")
     tmp = os.path.join(ROOT, "__pre.html")
     open(tmp, "w").write(pre)
 
@@ -68,44 +75,34 @@ window.addEventListener('load', function () {
         dump = subprocess.run(
             [CHROME, "--headless=new", "--disable-gpu", "--virtual-time-budget=8000",
              "--dump-dom", f"http://127.0.0.1:{PORT}/__pre.html"],
-            capture_output=True, text=True, timeout=90,
-        ).stdout
+            capture_output=True, text=True, timeout=90).stdout
     finally:
-        httpd.shutdown()
-        os.remove(tmp)
+        httpd.shutdown(); os.remove(tmp)
 
     m = re.search(r'<textarea id="__pre">(.*)</textarea>', dump, re.S)
     if not m:
-        log("ERROR: could not find prerender payload (render failed)"); sys.exit(1)
-    data = json.loads(html.unescape(m.group(1)))
-    feat, dirs, count, ld = data["featured"], data["dir"], data["count"], data["ld"]
-    n_dir = dirs.count("<article")
-    n_feat = feat.count("<article")
-    if n_dir == 0:
-        log("ERROR: directory rendered 0 cards"); sys.exit(1)
-    log(f"rendered {n_dir} directory cards, {n_feat} featured, count='{count}', ld={'yes' if ld else 'no'}")
+        log("ERROR: render produced no payload"); sys.exit(1)
+    d = json.loads(html.unescape(m.group(1)))
+    feat, dirs, count, ld = d["featured"], d["dir"], d["count"], d["ld"]
+    n = dirs.count("<article")
+    if n == 0:
+        log("ERROR: 0 directory cards rendered"); sys.exit(1)
+    log(f"rendered {n} directory cards, {feat.count('<article')} featured, count={count}, ld={'yes' if ld else 'no'}")
 
-    # 2) build dist/index.html from clean source with content injected
-    out = src
-    out = out.replace('id="featuredGrid"></div>', 'id="featuredGrid">' + feat + '</div>')
-    out = out.replace('id="dirGrid"></div>', 'id="dirGrid">' + dirs + '</div>')
+    # bake into the clean template
+    out = clean
+    out = out.replace('<!--FEAT:START--><div class="dir-grid" id="featuredGrid"></div><!--FEAT:END-->',
+                      '<!--FEAT:START--><div class="dir-grid" id="featuredGrid">' + feat + '</div><!--FEAT:END-->')
+    out = out.replace('<!--DIR:START--><div class="dir-grid" id="dirGrid"></div><!--DIR:END-->',
+                      '<!--DIR:START--><div class="dir-grid" id="dirGrid">' + dirs + '</div><!--DIR:END-->')
+    if ld:
+        out = out.replace('<!--LD:START--><!--LD:END-->',
+                          '<!--LD:START--><script type="application/ld+json" id="ld-itemlist">' + ld + '</script><!--LD:END-->')
     if count:
         out = out.replace('<span id="dirCount">—</span>', '<span id="dirCount">' + count + '</span>')
-    if ld:
-        out = out.replace("</head>", '<script type="application/ld+json" id="ld-itemlist">' + ld + '</script>\n</head>')
 
-    # 3) assemble dist/
-    if os.path.exists(DIST): shutil.rmtree(DIST)
-    os.makedirs(DIST)
-    for item in COPY:
-        s = os.path.join(ROOT, item)
-        d = os.path.join(DIST, item)
-        if os.path.isdir(s): shutil.copytree(s, d)
-        elif os.path.exists(s): shutil.copy2(s, d)
-    open(os.path.join(DIST, "index.html"), "w").write(out)
-    # CNAME is not needed on Cloudflare Pages (custom domain set in dashboard)
-    log(f"wrote {DIST}")
-    log("done. Deploy ./dist")
+    open(index, "w").write(out)
+    log(f"baked into index.html ({len(out)//1024} KB). Commit + push to deploy.")
 
 if __name__ == "__main__":
     main()

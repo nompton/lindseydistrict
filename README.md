@@ -17,7 +17,7 @@ submit.html       "List / claim your business" form (prefills from ?business=…
 css/styles.css    Brand design system (colors, type, components)
 js/data.js        ← the content: businesses, categories, deals, events  (EDIT THIS)
 js/app.js         Rendering, filtering, search, map, forms, deals unlock, prerender-aware
-build.py          SEO prerender → writes ./dist with the directory baked into static HTML
+build.py          SEO prerender → bakes the directory into index.html (static HTML)
 assets/           Logos, badge, favicons, brand art
 robots.txt        / sitemap.xml — SEO
 ```
@@ -59,20 +59,25 @@ Uses **Leaflet + OpenStreetMap** (free, no API key).
 
 ## Build & deploy (Cloudflare Pages)
 
-The site works as-is (JS renders the directory). For **best SEO**, run the prerender first — it bakes all
-listings into static HTML so crawlers see them without running JS. `build.py` renders the real
-`app.js`/`data.js` in headless Chrome and writes `./dist`, so the static output can never drift from the app.
+The site is hosted on Cloudflare Pages and **auto-deploys when you push to `main`**.
+
+For SEO, the directory is **baked into `index.html`** as static HTML (so crawlers and no-JS visitors see all
+listings). `build.py` renders the real `app.js`/`data.js` in headless Chrome and writes the generated cards +
+`ItemList` JSON-LD back into `index.html` between `<!--DIR:START-->` / `<!--FEAT:START-->` / `<!--LD:START-->`
+markers — one source of truth, so the static HTML never drifts. It's idempotent (safe to re-run).
+
+**Whenever you edit `js/data.js`** (add a business, change a deal, etc.):
 
 ```bash
-# 1) prerender  (re-run after editing js/data.js)
-python3 build.py
-
-# 2) deploy ./dist to Cloudflare Pages
-npx wrangler@4 pages deploy dist --project-name=lindseydistrict --branch=main
+python3 build.py            # re-bake index.html
+git add -A && git commit -m "update listings" && git push   # auto-deploys
 ```
 
-The custom domains (`lindseydistrict.com`, `www`) are attached to the Pages project in the Cloudflare
-dashboard. `./dist` is generated output and is git-ignored.
+To deploy manually instead: `npx wrangler@4 pages deploy . --project-name=lindseydistrict --branch=main`.
+The custom domains (`lindseydistrict.com`, `www`) are attached to the Pages project in the Cloudflare dashboard.
+
+> If you edit `index.html` structure by hand, keep the `<!-- …:START/END -->` marker comments intact and
+> re-run `python3 build.py` afterward.
 
 ## Local preview
 

@@ -155,22 +155,28 @@
     });
   }
 
-  render();
+  // Initial paint. If the grid was pre-rendered into static HTML (SEO build),
+  // leave it in place and just sync the count; otherwise render from JS.
+  if (grid) {
+    if (grid.childElementCount === 0) render();
+    else { const cc = $("#dirCount"); if (cc) cc.textContent = BUSINESSES.filter(matches).length; }
+  }
 
   /* ---------- featured "Local Favorites" row ---------- */
   const featuredGrid = $("#featuredGrid");
   if (featuredGrid) {
     const feats = BUSINESSES.filter((b) => b.featured);
-    if (feats.length) {
-      featuredGrid.innerHTML = feats.map(cardHTML).join("");
-    } else {
+    if (!feats.length) {
       const sec = $("#featured");
       if (sec) sec.hidden = true;
+    } else if (featuredGrid.childElementCount === 0) {
+      featuredGrid.innerHTML = feats.map(cardHTML).join("");
     }
   }
 
   /* ---------- SEO: emit an ItemList of the directory ---------- */
   try {
+    if (document.getElementById("ld-itemlist")) throw 0; // already pre-rendered
     const items = BUSINESSES.map((b, i) => {
       const item = { "@type": "LocalBusiness", name: b.name };
       if (b.address) item.address = { "@type": "PostalAddress", streetAddress: b.address.replace(/, Norman, OK$/, ""), addressLocality: "Norman", addressRegion: "OK" };
@@ -185,9 +191,10 @@
     };
     const s = document.createElement("script");
     s.type = "application/ld+json";
+    s.id = "ld-itemlist";
     s.textContent = JSON.stringify(ld);
     document.head.appendChild(s);
-  } catch (e) { /* non-critical */ }
+  } catch (e) { /* non-critical / already pre-rendered */ }
 
   /* ---------- back-to-top button ---------- */
   const toTop = $("#toTop");

@@ -1,29 +1,32 @@
 # Lindsey Street District
 
-The official website + business directory for the **Historic Lindsey Street District** in Norman, Oklahoma.
-Static site (plain HTML/CSS/JS, no build step) — designed to deploy on GitHub Pages at **lindseydistrict.com**.
+The official website + business directory for the **Historic Lindsey Street District** in Norman, Oklahoma —
+and a lead-generation funnel for **GRID Real Estate**. Live at **[lindseydistrict.com](https://lindseydistrict.com)**,
+hosted on **Cloudflare Pages**.
+
+Plain HTML/CSS/JS. The only build step is an optional SEO **prerender** (`build.py`).
 
 ---
 
 ## What's here
 
 ```
-index.html        Home: hero, about, directory (search + category filters), map, events, get-listed
-submit.html       "List your business" form
+index.html        Home: hero, about, directory, deals, map, events, lead funnels, newsletter
+submit.html       "List / claim your business" form (prefills from ?business=…)
 404.html          Friendly not-found page
 css/styles.css    Brand design system (colors, type, components)
-js/data.js        ← the directory content: businesses, categories, events  (EDIT THIS)
-js/app.js         Rendering, filtering, search, map, mobile nav
+js/data.js        ← the content: businesses, categories, deals, events  (EDIT THIS)
+js/app.js         Rendering, filtering, search, map, forms, deals unlock, prerender-aware
+build.py          SEO prerender → writes ./dist with the directory baked into static HTML
 assets/           Logos, badge, favicons, brand art
-CNAME             Custom domain for GitHub Pages (lindseydistrict.com)
 robots.txt        / sitemap.xml — SEO
 ```
 
 ## Editing the directory
 
-Everything the visitor sees in the directory lives in **`js/data.js`** — no coding required beyond copy/paste.
+Everything the visitor sees lives in **`js/data.js`** — no coding beyond copy/paste.
 
-**Add or edit a business** — copy a block in the `BUSINESSES` array and fill it in:
+**Add / edit a business** — copy a block in the `BUSINESSES` array:
 
 ```js
 { "name": "Velvet Taco", "category": "food",
@@ -32,49 +35,44 @@ Everything the visitor sees in the directory lives in **`js/data.js`** — no co
   "phone": "(405) 555-0100",               // optional
   "website": "https://…",                  // optional
   "instagram": "https://instagram.com/…",  // optional
-  "facebook": "https://facebook.com/…" },  // optional
+  "facebook": "https://facebook.com/…",    // optional
+  "featured": true },                      // optional → shows in "Local Favorites"
 ```
 
-- `category` **must** match a key in the `CATEGORIES` object at the top of the file
+- `category` **must** match a key in `CATEGORIES` at the top of the file
   (`food`, `service`, `beauty`, `shop`, `auto`, `bank`, `smoke`, `gym`, `fun`, `civic`, `education`, `pets`, `worship`).
-- Any field you leave out is simply hidden on the card.
-- To add a **new category**, add a line to `CATEGORIES` (with a label + emoji), then use its key on businesses.
+- Blank/omitted fields are hidden. `"featured": true` promotes a business to the Local Favorites row.
+- **Deals** (the email-unlock incentive) and **Events** are the `DEALS` and `EVENTS` arrays in the same file.
+  ⚠️ Replace the placeholder deals with **real, business-approved** offers before promoting.
 
-**Events** — edit the `EVENTS` array in the same file.
+## Leads → GRID Real Estate
+
+Every form (list/claim a business, Live Here, Lease Space, property management, newsletter, deals unlock)
+POSTs to the GRID CRM at `portal.thegridre.com` with a `lead_type` / `interest` tag. Config is at the top of
+the lead section in `js/app.js` (`LEAD_ENDPOINT`, `GRID_SITE_KEY`).
 
 ## The map
 
-Pins are placed **automatically from each business's street address** along Lindsey Street, so the map
-populates with zero extra work. Positions are **approximate** (good enough to show the general layout).
-To pin a business precisely, add exact coordinates to it:
+Pins are placed **automatically from each business's street address** (approximate). To pin one exactly, add
+`"lat": 35.2054, "lng": -97.4620` to it (right-click the spot in Google Maps to get coordinates).
+Uses **Leaflet + OpenStreetMap** (free, no API key).
 
-```js
-{ "name": "…", "category": "…", "address": "…", "lat": 35.2054, "lng": -97.4620 },
+## Build & deploy (Cloudflare Pages)
+
+The site works as-is (JS renders the directory). For **best SEO**, run the prerender first — it bakes all
+listings into static HTML so crawlers see them without running JS. `build.py` renders the real
+`app.js`/`data.js` in headless Chrome and writes `./dist`, so the static output can never drift from the app.
+
+```bash
+# 1) prerender  (re-run after editing js/data.js)
+python3 build.py
+
+# 2) deploy ./dist to Cloudflare Pages
+npx wrangler@4 pages deploy dist --project-name=lindseydistrict --branch=main
 ```
 
-Get coordinates by right-clicking the spot in Google Maps → the lat/lng shows at the top.
-The map uses **Leaflet + OpenStreetMap** (free, no API key).
-
-## Making the "List your business" form actually send
-
-The form currently shows a friendly on-page confirmation (no backend). To receive real submissions,
-create a free endpoint at **[Formspree](https://formspree.io)** and set it on the form in `submit.html`:
-
-```html
-<form id="submitForm" action="https://formspree.io/f/XXXXXXX" method="POST">
-```
-
-Also update the fallback email in `submit.html` (currently `hello@lindseydistrict.com`).
-
-## Deploying to GitHub Pages
-
-1. Create a GitHub repo and push this folder to it.
-2. Repo **Settings → Pages** → Source: `main` branch, `/ (root)`.
-3. The included `CNAME` sets the custom domain to `lindseydistrict.com`. In your domain registrar's DNS,
-   point the domain at GitHub Pages:
-   - `A` records for the apex → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-   - `CNAME` for `www` → `<your-username>.github.io`
-4. Back in Settings → Pages, tick **Enforce HTTPS** once the certificate is issued.
+The custom domains (`lindseydistrict.com`, `www`) are attached to the Pages project in the Cloudflare
+dashboard. `./dist` is generated output and is git-ignored.
 
 ## Local preview
 

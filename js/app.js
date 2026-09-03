@@ -79,6 +79,15 @@
     return hay.includes(query);
   }
 
+  // Prefilled "claim your listing" link → the submit page (B2B lead capture).
+  function claimHref(b) {
+    const cat = CATEGORIES[b.category];
+    const p = new URLSearchParams({ business: b.name });
+    if (cat) p.set("category", cat.label);
+    if (b.address) p.set("address", b.address);
+    return "submit.html?" + p.toString();
+  }
+
   function cardHTML(b) {
     const cat = CATEGORIES[b.category] || { label: b.category, emoji: "📍" };
     const links = [];
@@ -93,9 +102,10 @@
     if (b.hours)   meta.push(`<div class="row">${icon.clock}<span>${esc(b.hours)}</span></div>`);
 
     return `
-      <article class="card">
+      <article class="card${b.featured ? " card--featured" : ""}">
         <div class="card-top">
           <span class="card-cat">${esc(cat.label)}</span>
+          ${b.featured ? '<span class="card-fav">★ Local Favorite</span>' : ""}
           <span class="cat-emoji" aria-hidden="true">${cat.emoji}</span>
         </div>
         <div class="card-body">
@@ -103,6 +113,7 @@
           <p class="card-desc">${esc(b.desc || "")}</p>
           <div class="card-meta">${meta.join("")}</div>
           ${links.length ? `<div class="card-links">${links.join("")}</div>` : ""}
+          <a class="card-claim" href="${claimHref(b)}">Own this business? Claim &amp; update ↗</a>
         </div>
       </article>`;
   }
@@ -145,6 +156,67 @@
   }
 
   render();
+
+  /* ---------- featured "Local Favorites" row ---------- */
+  const featuredGrid = $("#featuredGrid");
+  if (featuredGrid) {
+    const feats = BUSINESSES.filter((b) => b.featured);
+    if (feats.length) {
+      featuredGrid.innerHTML = feats.map(cardHTML).join("");
+    } else {
+      const sec = $("#featured");
+      if (sec) sec.hidden = true;
+    }
+  }
+
+  /* ---------- SEO: emit an ItemList of the directory ---------- */
+  try {
+    const items = BUSINESSES.map((b, i) => {
+      const item = { "@type": "LocalBusiness", name: b.name };
+      if (b.address) item.address = { "@type": "PostalAddress", streetAddress: b.address.replace(/, Norman, OK$/, ""), addressLocality: "Norman", addressRegion: "OK" };
+      if (b.phone) item.telephone = b.phone;
+      if (b.website) item.url = b.website;
+      return { "@type": "ListItem", position: i + 1, item };
+    });
+    const ld = {
+      "@context": "https://schema.org", "@type": "ItemList",
+      name: "Lindsey Street District Business Directory",
+      numberOfItems: items.length, itemListElement: items,
+    };
+    const s = document.createElement("script");
+    s.type = "application/ld+json";
+    s.textContent = JSON.stringify(ld);
+    document.head.appendChild(s);
+  } catch (e) { /* non-critical */ }
+
+  /* ---------- back-to-top button ---------- */
+  const toTop = $("#toTop");
+  if (toTop) {
+    const onScroll = () => toTop.classList.toggle("show", window.scrollY > 900);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+  }
+
+  /* ---------- submit page: prefill from ?business/category/address (claim flow) ---------- */
+  {
+    const sf = $("#submitForm");
+    if (sf) {
+      const params = new URLSearchParams(location.search);
+      const biz = params.get("business");
+      const setVal = (id, key) => { const el = document.getElementById(id); const v = params.get(key); if (el && v) el.value = v; };
+      setVal("bizname", "business");
+      setVal("address", "address");
+      const catv = params.get("category");
+      const catSel = document.getElementById("category");
+      if (catSel && catv) Array.from(catSel.options).forEach((o) => { if (o.value === catv || o.text === catv) catSel.value = o.value; });
+      const note = $("#claimNote");
+      if (note && (biz || params.get("featured"))) {
+        note.hidden = false;
+        if (biz) note.innerHTML = `You're claiming / updating <strong>${esc(biz)}</strong>. Confirm the details below and we'll verify and update the listing.`;
+      }
+    }
+  }
 
   /* ---------- stats ---------- */
   const totalEl = $("#statTotal");

@@ -6,6 +6,11 @@
 <title>Lindsey Street District — Norman's Walkable Live · Work · Play District</title>
 <meta name="description" content="The official business directory of the Historic Lindsey Street District in Norman, Oklahoma. Find local places to eat, shop, and get things done — all along Lindsey Street. Good times await.">
 <link rel="canonical" href="https://lindseydistrict.com/">
+<meta name="keywords" content="Lindsey Street Norman, things to do Norman OK, Norman restaurants, Lindsey Street businesses, Norman shopping, near OU, Norman Oklahoma directory">
+<meta name="geo.region" content="US-OK">
+<meta name="geo.placename" content="Norman, Oklahoma">
+<meta name="geo.position" content="35.2045;-97.4655">
+<meta name="ICBM" content="35.2045, -97.4655">
 
 <meta property="og:title" content="Lindsey Street District — Norman, OK">
 <meta property="og:description" content="Norman's favorite walkable live + work + play district. Browse the local business directory. Good times await.">
@@ -101,6 +106,13 @@
 <!-- ===== Directory ===== -->
 <section class="section section--blush" id="directory">
   <div class="wrap">
+    <div class="favorites" id="featured">
+      <div class="fav-head">
+        <h3 class="fav-title">★ Local Favorites</h3>
+        <a class="fav-cta" href="submit.html?featured=1">Want your business featured here? ↗</a>
+      </div>
+      <div class="dir-grid" id="featuredGrid"></div>
+    </div>
     <div class="dir-head">
       <div>
         <p class="eyebrow">The Directory</p>
@@ -409,6 +421,8 @@
     © <span id="year">2026</span> Lindsey Street District · Norman, Oklahoma · Made for the neighborhood.
   </div>
 </footer>
+
+<button id="toTop" class="to-top" aria-label="Back to top" title="Back to top">↑</button>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="js/data.js"></script>

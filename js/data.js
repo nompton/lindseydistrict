@@ -161,18 +161,14 @@ const BUSINESSES = [
 
 /* ---------------------------------------------------------
    District Deals — the email "unlock" incentive.
-   ⚠️ THESE ARE PLACEHOLDERS. Replace with REAL offers that the
-   business has agreed to. Never publish a deal for a named
-   business unless they've approved it. Add/remove freely.
+   ⚠️ Only publish REAL offers a business has approved. While this
+   array is EMPTY, the site automatically shows a "deals dropping
+   soon — subscribe to be first" state (still captures emails).
+   Add offers to flip it back to the unlock/coupon experience:
+     { business: "Velvet Taco", offer: "$2 off any entrée",
+       details: "Dine-in, show phone", expires: "Sep 30" },
    --------------------------------------------------------- */
-const DEALS = [
-  { business: "Sample Coffee Co.",   offer: "$1 off any espresso drink", details: "Show this screen at the counter.", expires: "this month" },
-  { business: "District Diner",       offer: "Free appetizer with 2 entrées", details: "Dine-in only. One per table.", expires: "this month" },
-  { business: "Lindsey Threads",      offer: "15% off your purchase",     details: "Mention the Lindsey List.",       expires: "this month" },
-  { business: "Corner Barber",        offer: "$5 off a cut",              details: "New clients. By appointment.",    expires: "this month" },
-  { business: "Sunset Yoga",          offer: "First class free",          details: "New students only.",              expires: "this month" },
-  { business: "Main Street Sweets",   offer: "Buy one, get one 50% off",  details: "Show this screen to redeem.",     expires: "this month" },
-];
+const DEALS = [];
 
 /* Upcoming district events — edit freely. */
 const EVENTS = [

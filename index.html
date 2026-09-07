@@ -2023,15 +2023,15 @@
 <section class="section wrap" id="deals">
   <p class="eyebrow">Members-Only Perks</p>
   <h2 class="section-title">This month's <span class="script">district deals</span></h2>
-  <p style="max-width:64ch">Join the Lindsey List free and unlock exclusive deals from Lindsey Street businesses — fresh ones drop every month. Good times, better prices.</p>
+  <p id="dealsIntro" style="max-width:64ch">Join the Lindsey List free and unlock exclusive deals from Lindsey Street businesses — fresh ones drop every month. Good times, better prices.</p>
 
   <div class="deals-wrap is-locked" id="dealsWrap">
     <div class="deals-grid" id="dealsGrid"></div>
     <div class="deals-lock">
       <div class="deals-lock-card">
-        <div class="lock-icon" aria-hidden="true">🔒</div>
-        <h3>Unlock this month's deals</h3>
-        <p style="color:var(--muted); margin:.2rem 0 1rem;">Enter your email — it's free, and you'll get new district deals &amp; events every month.</p>
+        <div class="lock-icon" id="dealsIcon" aria-hidden="true">🔒</div>
+        <h3 id="dealsHeading">Unlock this month's deals</h3>
+        <p id="dealsSub" style="color:var(--muted); margin:.2rem 0 1rem;">Enter your email — it's free, and you'll get new district deals &amp; events every month.</p>
         <div id="dealsSuccess" class="form-success" hidden><strong>Unlocked! 🎉</strong> Enjoy the deals — new ones drop monthly.</div>
         <form class="js-newsletter signup" data-interest="deals" novalidate aria-label="Unlock district deals">
           <input type="email" name="email" required placeholder="you@email.com" aria-label="Your email address">

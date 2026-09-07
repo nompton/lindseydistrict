@@ -246,8 +246,9 @@
   }
 
   /* ---------- district deals (email-unlock incentive) ---------- */
+  const hasDeals = (typeof DEALS !== "undefined") && DEALS.length > 0;
   const dealsGrid = $("#dealsGrid");
-  if (dealsGrid && typeof DEALS !== "undefined") {
+  if (dealsGrid && hasDeals) {
     dealsGrid.innerHTML = DEALS.map((d) => `
       <article class="deal-card">
         <span class="deal-tag">Deal</span>
@@ -260,11 +261,24 @@
   const dealsWrap = $("#dealsWrap");
   function dealsAreUnlocked() { try { return localStorage.getItem("lsd_deals") === "1"; } catch { return false; } }
   function unlockDeals() {
+    if (!hasDeals) return;                 // nothing to reveal in "coming soon" mode
     try { localStorage.setItem("lsd_deals", "1"); } catch {}
     if (dealsWrap) dealsWrap.classList.remove("is-locked");
   }
-  // Returning subscribers see deals already unlocked (no flash of locked state).
-  if (dealsWrap && dealsAreUnlocked()) dealsWrap.classList.remove("is-locked");
+  if (!hasDeals) {
+    // No approved offers yet → honest "coming soon" state (still captures emails).
+    const set = (id, html) => { const el = $("#" + id); if (el) el.innerHTML = html; };
+    set("dealsIntro", "Local deals are coming to the district. Join the Lindsey List and you'll be first to get them — plus new openings and events.");
+    set("dealsIcon", "👀");
+    set("dealsHeading", "Deals dropping soon");
+    set("dealsSub", "Be first in line — subscribe and we'll email you the moment district deals drop.");
+    set("dealsSuccess", "<strong>You're on the list! 🎉</strong> We'll email you the moment deals drop.");
+    const btn = dealsWrap && dealsWrap.querySelector('form button[type="submit"]');
+    if (btn) btn.textContent = "Notify Me";
+  } else if (dealsWrap && dealsAreUnlocked()) {
+    // Returning subscribers see deals already unlocked (no flash of locked state).
+    dealsWrap.classList.remove("is-locked");
+  }
 
   /* ---------- map (Leaflet) ---------- */
   const mapEl = $("#map");

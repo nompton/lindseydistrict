@@ -56,10 +56,10 @@
       <strong>Thanks! 🎉</strong> Your listing request has been noted. We'll review it and add your business to the directory soon.
     </div>
 
-    <!-- To go live: create a free form endpoint at https://formspree.io,
-         then set the action below to your endpoint, e.g.
-         action="https://formspree.io/f/xxxxxxx" method="POST".
-         Until then, the form shows a friendly on-page confirmation. -->
+    <!-- Submits live: js/app.js intercepts this form and POSTs it to the GRID
+         lead endpoint (portal.thegridre.com/api/public/contact/submit) as a
+         directory lead, then reveals #formSuccess. The action="#" is only a
+         no-JS fallback and never fires. -->
     <form id="submitForm" action="#" method="POST">
       <div class="form-grid">
         <div class="field full">

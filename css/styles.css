@@ -304,6 +304,35 @@ h1, h2, h3 { line-height: 1.05; margin: 0 0 .5rem; }
 .deal-details { color: var(--muted); font-size: .92rem; margin: .5rem 0 .6rem; }
 .deal-exp { font-size: .8rem; color: var(--red-dark); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
 
+/* ---------- Gated market report ---------- */
+.report-wrap { position: relative; margin-top: 1.6rem; min-height: 340px; }
+.report-wrap.is-locked .report-body { filter: blur(9px); pointer-events: none; user-select: none; }
+.report-lock { display: none; }
+.report-wrap.is-locked .report-lock { display: grid; place-items: center; position: absolute; inset: 0; padding: 1rem; }
+.report-lock-card {
+  background: var(--cream); border: 2px solid var(--charcoal); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 1.9rem 1.8rem; max-width: 480px; text-align: center;
+}
+.report-lock-card .lock-icon { font-size: 2.1rem; line-height: 1; }
+.report-lock-card h3 { font-family: var(--font-slab); color: var(--charcoal); font-size: 1.35rem; margin: .3rem 0 0; }
+.report-lock-card .signup { justify-content: center; }
+.report-lock-card .signup input[type="email"] { border-color: var(--cream-2); }
+.report-glance { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-bottom: 1.7rem; }
+.rg { background: var(--cream); border: 1px solid var(--cream-2); border-radius: var(--radius); padding: 1rem; text-align: center; }
+.rg-num { font-family: var(--font-slab); font-size: 1.9rem; color: var(--red); line-height: 1; }
+.rg-num span { font-size: .9rem; }
+.rg-lbl { font-family: var(--font-display); letter-spacing: .07em; text-transform: uppercase; color: var(--teal-dark); font-size: .82rem; margin-top: .35rem; }
+.report-sub { font-family: var(--font-slab); color: var(--charcoal); font-size: 1.2rem; margin: 0 0 .9rem; }
+.mix { display: grid; gap: .5rem; max-width: 640px; }
+.mix-row { display: grid; grid-template-columns: 150px 1fr 34px; align-items: center; gap: .7rem; }
+.mix-label { font-size: .9rem; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mix-track { background: var(--cream-2); border-radius: 999px; height: 14px; overflow: hidden; }
+.mix-bar { height: 100%; background: linear-gradient(90deg, var(--teal), var(--teal-dark)); border-radius: 999px; }
+.mix-count { font-family: var(--font-slab); color: var(--charcoal); font-size: .95rem; text-align: right; }
+.report-more { margin-top: 1.7rem; background: var(--sky-2); border: 1px solid var(--sky); border-radius: var(--radius); padding: 1.2rem 1.3rem; color: var(--teal-dark); }
+.report-more .btn { margin-top: .9rem; }
+@media (max-width: 560px) { .mix-row { grid-template-columns: 104px 1fr 28px; } }
+
 /* ---------- Map ---------- */
 #map { height: 460px; border-radius: var(--radius); border: 3px solid var(--charcoal); box-shadow: var(--shadow); z-index: 1; }
 .map-note { margin-top: .9rem; font-size: .9rem; color: var(--muted); }

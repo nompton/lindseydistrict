@@ -292,6 +292,47 @@
     dealsWrap.classList.remove("is-locked");
   }
 
+  /* ---------- gated market report (investor / landlord magnet) ----------
+     The reveal is real corridor intelligence derived from the directory
+     (tenant mix, counts); the deep ATLAS metrics are the hook to talk to GRID. */
+  const reportBody = $("#reportBody");
+  const reportWrap = $("#reportWrap");
+  function reportUnlocked() { try { return localStorage.getItem("lsd_report") === "1"; } catch { return false; } }
+  function unlockReport() {
+    try { localStorage.setItem("lsd_report", "1"); } catch {}
+    if (reportWrap) reportWrap.classList.remove("is-locked");
+  }
+  if (reportBody) {
+    const counts = {};
+    BUSINESSES.forEach((b) => { counts[b.category] = (counts[b.category] || 0) + 1; });
+    const rows = Object.keys(CATEGORIES)
+      .map((k) => ({ label: CATEGORIES[k].label, emoji: CATEGORIES[k].emoji, n: counts[k] || 0 }))
+      .filter((r) => r.n > 0)
+      .sort((a, b) => b.n - a.n);
+    const max = rows.length ? rows[0].n : 1;
+    const centers = new Set(BUSINESSES.map((b) => b.center).filter(Boolean)).size;
+    const mix = rows.map((r) => `
+      <div class="mix-row">
+        <div class="mix-label">${r.emoji} ${esc(r.label)}</div>
+        <div class="mix-track"><div class="mix-bar" style="width:${Math.round((r.n / max) * 100)}%"></div></div>
+        <div class="mix-count">${r.n}</div>
+      </div>`).join("");
+    reportBody.innerHTML = `
+      <div class="report-glance">
+        <div class="rg"><div class="rg-num">${BUSINESSES.length}</div><div class="rg-lbl">Businesses tracked</div></div>
+        <div class="rg"><div class="rg-num">${rows.length}</div><div class="rg-lbl">Categories</div></div>
+        <div class="rg"><div class="rg-num">${centers}</div><div class="rg-lbl">Shopping centers</div></div>
+        <div class="rg"><div class="rg-num">~1.5<span>mi</span></div><div class="rg-lbl">Corridor length</div></div>
+      </div>
+      <h3 class="report-sub">Tenant mix on Lindsey Street</h3>
+      <div class="mix">${mix}</div>
+      <div class="report-more">
+        <strong>The full GRID report adds:</strong> asking lease rates, vacancy &amp; absorption, rent benchmarks, and recent lease &amp; sale comps from ATLAS.
+        <a class="btn btn--teal" href="#space">Request the full report →</a>
+      </div>`;
+    if (reportWrap && reportUnlocked()) reportWrap.classList.remove("is-locked");
+  }
+
   /* ---------- map (Leaflet) ---------- */
   const mapEl = $("#map");
   if (mapEl && window.L) {
@@ -524,23 +565,25 @@
         return;
       }
       const interest = nf.dataset.interest || "newsletter";
+      const subjects = { deals: "Lindsey List — deals unlock", "market-report": "Lindsey Street market report request" };
       const btn = nf.querySelector('button[type="submit"]');
       const original = btn ? btn.textContent : "";
       if (btn) { btn.disabled = true; btn.textContent = "Subscribing…"; }
       try {
         await postLead({
-          lead_type: "newsletter",
+          lead_type: interest === "market-report" ? "investor" : "newsletter",
           interest: interest,
-          subject: interest === "deals" ? "Lindsey List — deals unlock" : "Lindsey List signup",
+          subject: subjects[interest] || "Lindsey List signup",
           email: email,
-          message: "Newsletter subscriber via lindseydistrict.com" + (interest === "deals" ? " (deals unlock)" : ""),
+          message: "Via lindseydistrict.com" + (interest !== "newsletter" ? " (" + interest + ")" : ""),
         });
         const ok = nf.parentElement && nf.parentElement.querySelector(".form-success");
         if (ok) ok.hidden = false;
         nf.reset();
         nf.hidden = true;
-        // Subscribing anywhere on the site unlocks the district deals.
-        unlockDeals();
+        // Reveal whatever this form gates.
+        if (nf.dataset.unlock === "report") { if (typeof unlockReport === "function") unlockReport(); }
+        else unlockDeals();
       } catch {
         if (btn) { btn.disabled = false; btn.textContent = original || "Subscribe"; }
         alert("Hmm, that didn't go through — please try again in a moment.");

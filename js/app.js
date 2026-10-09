@@ -234,7 +234,13 @@
   /* ---------- events ---------- */
   const eventsEl = $("#eventsList");
   if (eventsEl && typeof EVENTS !== "undefined") {
-    eventsEl.innerHTML = EVENTS.map((ev) => `
+    // Only show events dated today or later; events without a `date` are evergreen.
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const upcoming = EVENTS
+      .filter((ev) => !ev.date || new Date(ev.date + "T00:00:00") >= today)
+      .sort((a, b) => (a.date || "9999-12-31").localeCompare(b.date || "9999-12-31"));
+    if (upcoming.length) {
+      eventsEl.innerHTML = upcoming.map((ev) => `
       <div class="event">
         <div class="date"><div class="m">${esc(ev.month)}</div><div class="d">${esc(ev.day)}</div></div>
         <div>
@@ -243,6 +249,12 @@
           <p>${esc(ev.desc)}</p>
         </div>
       </div>`).join("");
+    } else {
+      // Nothing scheduled → honest "follow for events" state (never shows stale dates).
+      eventsEl.innerHTML = `<p class="events-empty">Nothing on the calendar this minute — follow <a href="https://www.instagram.com/lindseystreetdistrict" target="_blank" rel="noopener">@lindseystreetdistrict</a> to catch the next block party, sidewalk stroll, or live-music night as it's announced.</p>`;
+      const intro = $("#eventsIntro");
+      if (intro) intro.textContent = "We post block parties, sidewalk strolls, live music, and seasonal happenings as they're planned. Follow along so you never miss a good time.";
+    }
   }
 
   /* ---------- district deals (email-unlock incentive) ---------- */

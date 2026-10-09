@@ -170,12 +170,14 @@ const BUSINESSES = [
    --------------------------------------------------------- */
 const DEALS = [];
 
-/* Upcoming district events — edit freely. */
-const EVENTS = [
-  {"month": "AUG", "day": "16", "title": "First Friday Sidewalk Stroll", "when": "Fri · 6–9pm", "desc": "Shops stay open late with sidewalk sales, live music, and food trucks along Lindsey."},
-  {"month": "SEP", "day": "06", "title": "Fall Kickoff Block Party", "when": "Sat · 11am–4pm", "desc": "Celebrate game-day season with local vendors, giveaways, and family fun."},
-  {"month": "OCT", "day": "25", "title": "District Trick-or-Treat", "when": "Sat · 3–6pm", "desc": "Costumes welcome — collect treats up and down the district."}
-];
+/* Upcoming district events. While empty, the section shows an honest
+   "follow us for events" state. Add real ones like this — include `date`
+   (YYYY-MM-DD) and the event auto-hides the day after it passes:
+     { "date": "2026-11-07", "month": "NOV", "day": "07",
+       "title": "First Friday Sidewalk Stroll", "when": "Fri · 6–9pm",
+       "desc": "Shops stay open late with live music and food trucks." }
+*/
+const EVENTS = [];
 
 /* Map center + zoom (W Lindsey St corridor, Norman OK). */
 const MAP_CONFIG = { center: [35.2045, -97.4655], zoom: 15 };

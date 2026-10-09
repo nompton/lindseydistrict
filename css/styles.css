@@ -325,6 +325,11 @@ h1, h2, h3 { line-height: 1.05; margin: 0 0 .5rem; }
 .event h3 { font-family: var(--font-slab); font-size: 1.15rem; margin: 0 0 .2rem; color: var(--charcoal); }
 .event p { margin: 0; color: var(--muted); font-size: .95rem; }
 .event .when { color: var(--teal-dark); font-weight: 600; font-size: .9rem; }
+.events-empty {
+  grid-column: 1 / -1; background: var(--cream); border: 1px dashed var(--cream-2);
+  border-radius: var(--radius); padding: 1.4rem 1.5rem; margin: 0; color: var(--muted); font-size: 1rem;
+}
+.events-empty a { font-weight: 600; }
 
 /* ---------- CTA band ---------- */
 .band {

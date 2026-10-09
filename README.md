@@ -79,6 +79,23 @@ The custom domains (`lindseydistrict.com`, `www`) are attached to the Pages proj
 > If you edit `index.html` structure by hand, keep the `<!-- …:START/END -->` marker comments intact and
 > re-run `python3 build.py` afterward.
 
+## ATLAS market snapshot (Lease Space section)
+
+The "Lindsey Street market snapshot" tiles are powered by a Cloudflare Pages Function at
+`functions/api/market.js` → `GET /api/market`. It proxies GRID's **ATLAS** data **server-side** so
+the API key never reaches the browser. Until it's configured, it returns `source:"placeholder"` and the
+widget shows a "— / live data coming soon" state (no fabricated numbers).
+
+**To go live:**
+
+1. In the Pages project → **Settings → Environment variables** (or `npx wrangler pages secret put ATLAS_API_KEY`):
+   - `ATLAS_API_URL` — the ATLAS endpoint returning Lindsey-corridor stats
+   - `ATLAS_API_KEY` — bearer token, if ATLAS needs auth
+2. In `functions/api/market.js`, map ATLAS's response fields to `stats` (there's a `TODO`) and set
+   `source = "live"`. The tiles then show real values and flip to the red "live" accent.
+
+The front-end lives in `index.html` (`#market`) + `js/app.js` (fetch/render) + `css/styles.css` (`.market*`).
+
 ## Local preview
 
 ```bash

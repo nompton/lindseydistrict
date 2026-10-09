@@ -317,6 +317,40 @@
     map.on("click", () => map.scrollWheelZoom.enable());
   }
 
+  /* ---------- ATLAS market snapshot (Lease Space section) ----------
+     Fetches /api/market (a Cloudflare Pages Function that proxies GRID's ATLAS
+     data server-side). Shows a labeled skeleton with "—" until real data is
+     wired, then live values. Never renders fabricated market numbers. */
+  const marketGrid = $("#marketGrid");
+  if (marketGrid) {
+    const fallback = {
+      source: "placeholder", period: "",
+      stats: [
+        { label: "Avg asking lease",   unit: "/sq ft/yr", value: null },
+        { label: "Vacancy rate",       unit: "%",         value: null },
+        { label: "Spaces available",   unit: "",          value: null },
+        { label: "Avg days on market", unit: "days",      value: null },
+      ],
+      note: "Live ATLAS market data coming soon.",
+    };
+    const renderMarket = (d) => {
+      marketGrid.innerHTML = (d.stats || []).map((s) => `
+        <div class="market-tile">
+          <div class="market-value">${s.value == null || s.value === "" ? "—" : esc(String(s.value))}<span class="market-unit">${esc(s.unit || "")}</span></div>
+          <div class="market-label">${esc(s.label)}</div>
+        </div>`).join("");
+      const note = $("#marketNote"); if (note) note.textContent = d.note || "";
+      const per = $("#marketPeriod");
+      if (per) per.textContent = d.source === "live" && d.period ? "As of " + d.period : "Powered by ATLAS";
+      const wrap = $("#market"); if (wrap) wrap.classList.toggle("is-live", d.source === "live");
+    };
+    renderMarket(fallback); // paint the skeleton immediately
+    fetch("/api/market", { headers: { accept: "application/json" } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d && d.stats) renderMarket(d); })
+      .catch(() => { /* keep skeleton (e.g. local preview without functions) */ });
+  }
+
   /* ---------- footer year ---------- */
   const yr = $("#year");
   if (yr) yr.textContent = new Date().getFullYear();

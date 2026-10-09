@@ -303,6 +303,9 @@
     if (reportWrap) reportWrap.classList.remove("is-locked");
   }
   if (reportBody) {
+    // Point the CTA at whichever commercial section exists on this page
+    // (#space on the homepage, #inquire on /invest).
+    const inquireHref = $("#inquire") ? "#inquire" : "#space";
     const counts = {};
     BUSINESSES.forEach((b) => { counts[b.category] = (counts[b.category] || 0) + 1; });
     const rows = Object.keys(CATEGORIES)
@@ -328,7 +331,7 @@
       <div class="mix">${mix}</div>
       <div class="report-more">
         <strong>The full GRID report adds:</strong> asking lease rates, vacancy &amp; absorption, rent benchmarks, and recent lease &amp; sale comps from ATLAS.
-        <a class="btn btn--teal" href="#space">Request the full report →</a>
+        <a class="btn btn--teal" href="${inquireHref}">Request the full report →</a>
       </div>`;
     if (reportWrap && reportUnlocked()) reportWrap.classList.remove("is-locked");
   }

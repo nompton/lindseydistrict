@@ -11,6 +11,10 @@
     String(str).replace(/[&<>"']/g, (c) =>
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+  // Business → page slug. MUST match the slug() in build.py (same algorithm).
+  const slug = (name) =>
+    String(name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
   /* ---------- approximate geocoding along W Lindsey St ----------
      The district runs roughly east-west along W Lindsey Street.
      We interpolate longitude from the street number and nudge
@@ -109,7 +113,7 @@
           <span class="cat-emoji" aria-hidden="true">${cat.emoji}</span>
         </div>
         <div class="card-body">
-          <h3>${esc(b.name)}</h3>
+          <h3><a class="card-name" href="biz/${slug(b.name)}.html">${esc(b.name)}</a></h3>
           <p class="card-desc">${esc(b.desc || "")}</p>
           <div class="card-meta">${meta.join("")}</div>
           ${links.length ? `<div class="card-links">${links.join("")}</div>` : ""}

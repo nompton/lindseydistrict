@@ -65,6 +65,9 @@ For SEO, the directory is **baked into `index.html`** as static HTML (so crawler
 listings). `build.py` renders the real `app.js`/`data.js` in headless Chrome and writes the generated cards +
 `ItemList` JSON-LD back into `index.html` between `<!--DIR:START-->` / `<!--FEAT:START-->` / `<!--LD:START-->`
 markers — one source of truth, so the static HTML never drifts. It's idempotent (safe to re-run).
+The build also generates an individual SEO page per business at `/biz/<slug>.html` (contacts,
+related businesses, LocalBusiness + BreadcrumbList schema) and regenerates `sitemap.xml` with every
+page. `/biz/` is generated output — don't hand-edit it; edit `js/data.js` and re-run the build.
 
 **Whenever you edit `js/data.js`** (add a business, change a deal, etc.):
 

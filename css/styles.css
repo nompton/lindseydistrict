@@ -232,6 +232,8 @@ h1, h2, h3 { line-height: 1.05; margin: 0 0 .5rem; }
 }
 .card-body { padding: 1rem 1.1rem 1.2rem; display: flex; flex-direction: column; gap: .5rem; flex: 1; }
 .card-body h3 { font-family: var(--font-slab); font-size: 1.2rem; color: var(--charcoal); margin: 0; }
+.card-name { color: inherit; text-decoration: none; }
+.card-name:hover { color: var(--red-dark); text-decoration: underline; }
 .card-desc { color: var(--muted); font-size: .95rem; margin: 0; flex: 1; }
 .card-meta { display: flex; flex-direction: column; gap: .25rem; font-size: .9rem; }
 .card-meta .row { display: flex; align-items: center; gap: .5rem; color: var(--ink); }
@@ -419,6 +421,26 @@ h1, h2, h3 { line-height: 1.05; margin: 0 0 .5rem; }
 .market-note { font-size: .82rem; color: var(--muted); margin: .9rem 0 0; }
 .market.is-live .market-tile { border-left-color: var(--red); }
 .market.is-live .market-period { color: var(--red-dark); }
+
+/* ---------- Business detail page ---------- */
+.crumbs { font-size: .85rem; color: var(--muted); margin-bottom: 1rem; }
+.crumbs a { color: var(--teal-dark); }
+.biz-name { font-family: var(--font-slab); font-size: clamp(1.8rem, 4vw, 2.8rem); color: var(--charcoal); margin: .2rem 0 1rem; }
+.biz-meta { display: grid; gap: .45rem; margin-bottom: 1.2rem; }
+.biz-meta .row { display: flex; align-items: center; gap: .5rem; color: var(--ink); }
+.biz-meta .row svg { width: 16px; height: 16px; color: var(--teal-dark); flex: none; }
+.biz-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.4rem; }
+.biz-intro { max-width: 68ch; font-size: 1.05rem; color: var(--ink); }
+.biz-claim { margin: 1.3rem 0; padding: 1rem 1.2rem; background: var(--sky-2); border: 1px solid var(--sky); border-radius: var(--radius); color: var(--teal-dark); }
+.biz-claim a { font-weight: 600; }
+.biz-related { margin-top: 2.4rem; }
+.biz-related h2 { font-family: var(--font-slab); font-size: 1.3rem; color: var(--charcoal); margin: 0 0 1rem; }
+.biz-related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: .8rem; }
+.biz-related-card { background: var(--cream); border: 1px solid var(--cream-2); border-radius: var(--radius); padding: .9rem 1rem; }
+.biz-related-card a { font-family: var(--font-slab); color: var(--charcoal); font-size: 1rem; text-decoration: none; }
+.biz-related-card a:hover { color: var(--red-dark); }
+.biz-related-card .ra { display: block; color: var(--muted); font-size: .85rem; margin-top: .2rem; }
+.biz-back { display: inline-block; margin-top: 1.8rem; font-family: var(--font-display); letter-spacing: .05em; text-transform: uppercase; color: var(--red-dark); }
 
 /* ---------- Form ---------- */
 .form-card {

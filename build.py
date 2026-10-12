@@ -14,7 +14,7 @@ reflects the current data.js.
 Usage:  python3 build.py        # updates index.html in place
 Re-run after editing js/data.js, then commit + push (auto-deploys).
 """
-import os, re, sys, json, html, subprocess, http.server, socketserver, threading
+import os, re, sys, json, html, shutil, subprocess, http.server, socketserver, threading
 from urllib.parse import quote
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -34,6 +34,7 @@ def reset(src):
 
 def serve():
     os.chdir(ROOT)
+    socketserver.TCPServer.allow_reuse_address = True
     httpd = socketserver.TCPServer(("127.0.0.1", PORT), http.server.SimpleHTTPRequestHandler)
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     return httpd
@@ -240,7 +241,11 @@ def biz_page_html(b, cats, by_cat, by_center):
 <meta property="og:description" content="{esc(desc)}">
 <meta property="og:type" content="business.business">
 <meta property="og:url" content="https://lindseydistrict.com/biz/{slug(name)}.html">
-<meta property="og:image" content="https://lindseydistrict.com/assets/good-times-await.png">
+<meta property="og:image" content="https://lindseydistrict.com/assets/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lindseydistrict.com/assets/og-card.png">
 <meta name="theme-color" content="#141414">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">

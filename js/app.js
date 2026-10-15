@@ -340,29 +340,40 @@
     if (reportWrap && reportUnlocked()) reportWrap.classList.remove("is-locked");
   }
 
-  /* ---------- map (Leaflet) ---------- */
+  /* ---------- map (Leaflet) ----------
+     Deferred until the map scrolls near the viewport — building the tile layer
+     and 100+ markers up front loads a lot of images the visitor may never see. */
   const mapEl = $("#map");
   if (mapEl && window.L) {
-    const map = L.map("map", { scrollWheelZoom: false }).setView(MAP_CONFIG.center, MAP_CONFIG.zoom);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
-
-    const pins = [];
-    BUSINESSES.forEach((b) => {
-      const c = approxCoords(b);
-      if (!c) return;
-      const cat = CATEGORIES[b.category] || { emoji: "📍", label: "" };
-      const mk = L.marker(c).addTo(map);
-      mk.bindPopup(
-        `<strong>${esc(b.name)}</strong><br>${cat.emoji} ${esc(cat.label)}` +
-        (b.address ? `<br><span style="color:#6f655c">${esc(b.address)}</span>` : "")
-      );
-      pins.push(c);
-    });
-    if (pins.length > 1) map.fitBounds(pins, { padding: [40, 40] });
-    map.on("click", () => map.scrollWheelZoom.enable());
+    const initMap = () => {
+      const map = L.map("map", { scrollWheelZoom: false }).setView(MAP_CONFIG.center, MAP_CONFIG.zoom);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+      const pins = [];
+      BUSINESSES.forEach((b) => {
+        const c = approxCoords(b);
+        if (!c) return;
+        const cat = CATEGORIES[b.category] || { emoji: "📍", label: "" };
+        const mk = L.marker(c).addTo(map);
+        mk.bindPopup(
+          `<strong>${esc(b.name)}</strong><br>${cat.emoji} ${esc(cat.label)}` +
+          (b.address ? `<br><span style="color:#6f655c">${esc(b.address)}</span>` : "")
+        );
+        pins.push(c);
+      });
+      if (pins.length > 1) map.fitBounds(pins, { padding: [40, 40] });
+      map.on("click", () => map.scrollWheelZoom.enable());
+    };
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver((entries, obs) => {
+        if (entries.some((e) => e.isIntersecting)) { obs.disconnect(); initMap(); }
+      }, { rootMargin: "400px" });
+      io.observe(mapEl);
+    } else {
+      initMap();
+    }
   }
 
   /* ---------- ATLAS market snapshot (Lease Space section) ----------

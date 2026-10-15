@@ -41,6 +41,25 @@
 html { scroll-behavior: smooth; }
 html, body { overflow-x: hidden; max-width: 100%; }
 
+/* ---------- Accessibility: visible keyboard focus + reduced motion ---------- */
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible,
+.chip:focus-visible, .btn:focus-visible {
+  outline: 3px solid var(--teal); outline-offset: 2px; border-radius: 6px;
+}
+.btn:focus-visible, .site-header a:focus-visible, .site-footer a:focus-visible,
+.hero a:focus-visible, .band a:focus-visible { outline-color: var(--gold); }
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible,
+.search-box input:focus-visible, .signup input:focus-visible {
+  outline: 3px solid var(--teal); outline-offset: 1px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important; animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important; scroll-behavior: auto !important;
+  }
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);

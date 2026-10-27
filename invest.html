@@ -119,6 +119,11 @@
         <p style="color:var(--muted); margin:.2rem 0 1rem;">Free for owners, investors, and operators. Get the corridor snapshot now — plus new district insights each month.</p>
         <div id="reportSuccess" class="form-success" hidden><strong>Unlocked! 🎉</strong> Here's your snapshot — a GRID advisor can send the full report with lease &amp; sale comps.</div>
         <form class="js-newsletter signup" data-interest="market-report" data-unlock="report" novalidate aria-label="Unlock the market report">
+          <!-- anti-bot honeypot: real users never see or fill this -->
+          <div style="position:absolute;left:-9999px" aria-hidden="true">
+            <label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+          </div>
+          <input type="hidden" name="form_rendered_at" value="">
           <input type="email" name="email" required placeholder="you@email.com" aria-label="Your email address">
           <button class="btn btn--red" type="submit">Unlock Report</button>
         </form>
@@ -140,6 +145,11 @@
     </div>
 
     <form id="spaceForm" style="margin-top:1.4rem; max-width:720px">
+      <!-- anti-bot honeypot: real users never see or fill this -->
+      <div style="position:absolute;left:-9999px" aria-hidden="true">
+        <label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <input type="hidden" name="form_rendered_at" value="">
       <div class="form-grid">
         <div class="field full">
           <label for="sp-intent">I'm interested in *</label>

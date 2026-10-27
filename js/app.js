@@ -430,6 +430,22 @@
     if (!res.ok) throw new Error();
   }
 
+  // Anti-bot: stamp render time on every lead form at load, and read the decoy +
+  // timing fields back out at submit. The GRID endpoint drops a lead when the
+  // decoy field is non-empty OR the form posts <1.5s after it rendered.
+  $$('input[name="form_rendered_at"]').forEach((hp) => { if (!hp.value) hp.value = Date.now(); });
+  function trapFields(f) {
+    const out = { form_rendered_at: (f.querySelector('input[name="form_rendered_at"]') || {}).value || "" };
+    const gotcha = f.querySelector('input[name="_gotcha"]');
+    if (gotcha) {
+      out._gotcha = gotcha.value || "";          // submitForm: decoy is _gotcha (it has a real "website" field)
+    } else {
+      const web = f.querySelector('input[name="website"]');
+      if (web) out.website = (web.value || "").trim();
+    }
+    return out;
+  }
+
   // "List your business" — a directory signup is also a warm commercial contact.
   const form = $("#submitForm");
   if (form) {
@@ -440,6 +456,7 @@
       if (btn) { btn.disabled = true; btn.textContent = "Submitting…"; }
       try {
         await postLead({
+          ...trapFields(form),
           lead_type: "directory",
           interest: "business-listing",
           subject: "Lindsey District directory listing",
@@ -479,6 +496,7 @@
       if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
       try {
         await postLead({
+          ...trapFields(sform),
           lead_type: leadType,
           interest: "commercial",
           subject: "Lindsey Street commercial inquiry",
@@ -514,6 +532,7 @@
       if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
       try {
         await postLead({
+          ...trapFields(lform),
           lead_type: buying ? "buyer" : "renter",
           interest: buying ? "buying" : "renting",
           subject: "Live in Lindsey District inquiry",
@@ -548,6 +567,7 @@
       if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
       try {
         await postLead({
+          ...trapFields(mform),
           lead_type: "seller",
           interest: "property-management",
           subject: "Apartment / property management inquiry",
@@ -589,6 +609,7 @@
       if (btn) { btn.disabled = true; btn.textContent = "Subscribing…"; }
       try {
         await postLead({
+          ...trapFields(nf),
           lead_type: interest === "market-report" ? "investor" : "newsletter",
           interest: interest,
           subject: subjects[interest] || "Lindsey List signup",

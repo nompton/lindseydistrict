@@ -70,6 +70,11 @@
          directory lead, then reveals #formSuccess. The action="#" is only a
          no-JS fallback and never fires. -->
     <form id="submitForm" action="#" method="POST">
+      <!-- anti-bot honeypot: real users never see or fill this -->
+      <div style="position:absolute;left:-9999px" aria-hidden="true">
+        <label>Website<input type="text" name="_gotcha" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <input type="hidden" name="form_rendered_at" value="">
       <div class="form-grid">
         <div class="field full">
           <label for="bizname">Business Name *</label>

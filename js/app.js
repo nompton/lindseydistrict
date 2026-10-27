@@ -443,6 +443,10 @@
       const web = f.querySelector('input[name="website"]');
       if (web) out.website = (web.value || "").trim();
     }
+    // Cloudflare Turnstile (3rd anti-spam layer). Cloudflare injects a hidden
+    // input[name="cf-turnstile-response"] into the form; forward it to GRID,
+    // which verifies fail-open so a missing/empty token never blocks a real lead.
+    out.cf_turnstile_response = (f.querySelector('[name="cf-turnstile-response"]') || {}).value || "";
     return out;
   }
 

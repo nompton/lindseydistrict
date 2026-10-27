@@ -39,6 +39,7 @@
   "sameAs": ["https://thegridre.com"]
 }
 </script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -125,6 +126,7 @@
           </div>
           <input type="hidden" name="form_rendered_at" value="">
           <input type="email" name="email" required placeholder="you@email.com" aria-label="Your email address">
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAFoF10j_tuosuTSk"></div>
           <button class="btn btn--red" type="submit">Unlock Report</button>
         </form>
         <p class="signup-note" style="color:var(--muted)">No spam — just district intel. Unsubscribe anytime.</p>
@@ -190,6 +192,7 @@
         </div>
       </div>
       <div style="margin-top:1.4rem; display:flex; gap:.8rem; flex-wrap:wrap; align-items:center;">
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAFoF10j_tuosuTSk"></div>
         <button class="btn btn--red" type="submit">Get in touch</button>
         <span class="form-note" style="margin:0">Represented by GRID Real Estate · <a href="https://thegridre.com" target="_blank" rel="noopener">thegridre.com ↗</a></span>
       </div>

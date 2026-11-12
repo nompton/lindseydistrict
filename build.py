@@ -142,7 +142,7 @@ ICON = {
 BIZ_HEADER = """<header class="site-header">
   <div class="wrap nav">
     <a class="brand" href="/" aria-label="Lindsey Street District home">
-      <img class="brand-badge" src="/assets/badge-transparent.png" alt="Historic Lindsey Street District badge" width="52" height="52">
+      <img class="brand-badge" src="/assets/badge-104.png" alt="Historic Lindsey Street District badge" width="52" height="52">
       <span class="brand-word"><span class="l1">Lindsey</span><span class="l2">STREET DISTRICT</span></span>
     </a>
     <button class="nav-toggle" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>

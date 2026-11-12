@@ -44,6 +44,10 @@ DUPES=$(find "$OUT" -name '* [0-9].*' | wc -l | tr -d ' ')
 CARDS=$(grep -o '<article' "$OUT/index.html" | wc -l | tr -d ' ')
 [ "$CARDS" -ge 100 ] || fail "index.html has only $CARDS baked cards — run python3 build.py."
 
+for a in css/styles.css js/app.js js/data.js; do
+  h=$(shasum "$OUT/$a" | cut -c1-8)
+  grep -q "$a?v=$h" "$OUT/index.html" || fail "index.html doesn't reference $a?v=$h — run python3 build.py after editing $a."
+done
 echo "deploy.sh: bundle OK — $(find "$OUT" -type f | wc -l | tr -d ' ') files, $BIZ business pages, $CARDS baked cards, commit ${SHA:0:7}"
 
 # 5) Deploy.

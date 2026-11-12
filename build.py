@@ -14,7 +14,7 @@ reflects the current data.js.
 Usage:  python3 build.py        # updates index.html in place
 Re-run after editing js/data.js, then commit + push (auto-deploys).
 """
-import os, re, sys, json, html, shutil, subprocess, http.server, socketserver, threading
+import os, re, sys, json, html, shutil, hashlib, subprocess, http.server, socketserver, threading
 from urllib.parse import quote
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -107,6 +107,7 @@ window.addEventListener('load', function () {
     log(f"baked into index.html ({len(out)//1024} KB).")
 
     generate_biz_pages()
+    stamp_assets()
     log("done. Commit + push to deploy.")
 
 
@@ -299,6 +300,33 @@ def generate_biz_pages():
     open(os.path.join(ROOT, "sitemap.xml"), "w").write(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + "\n</urlset>\n")
     log(f"wrote sitemap.xml ({len(urls)} urls)")
+
+
+# ---- cache-busting: fingerprint CSS/JS references --------------------------
+# Cloudflare serves css/js with a 4h browser cache, but HTML with max-age=0.
+# Stamping each reference with a content hash (?v=xxxxxxxx) means fresh HTML
+# always points at the matching JS/CSS, so a deploy never pairs new HTML with
+# a stale cached script.
+ASSETS = ["css/styles.css", "js/app.js", "js/data.js"]
+
+def asset_hash(rel):
+    return hashlib.sha1(open(os.path.join(ROOT, rel), "rb").read()).hexdigest()[:8]
+
+def stamp_assets():
+    hashes = {a: asset_hash(a) for a in ASSETS}
+    pat = re.compile(r'((?:href|src)=")(/?)(' + "|".join(re.escape(a) for a in ASSETS) + r')(?:\?v=[0-9a-f]+)?(")')
+    files = [os.path.join(ROOT, f) for f in ("index.html", "invest.html", "submit.html", "404.html")]
+    bizdir = os.path.join(ROOT, "biz")
+    if os.path.isdir(bizdir):
+        files += [os.path.join(bizdir, f) for f in os.listdir(bizdir) if f.endswith(".html")]
+    n = 0
+    for f in files:
+        if not os.path.exists(f): continue
+        t = open(f).read()
+        t2 = pat.sub(lambda m: f'{m.group(1)}{m.group(2)}{m.group(3)}?v={hashes[m.group(3)]}{m.group(4)}', t)
+        if t2 != t:
+            open(f, "w").write(t2); n += 1
+    log("stamped asset versions " + ", ".join(f"{a.split('/')[-1]}={h}" for a, h in hashes.items()) + f" into {n} files")
 
 
 if __name__ == "__main__":

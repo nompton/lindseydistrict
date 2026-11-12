@@ -126,5 +126,22 @@
   "median2025": 251000,
   "sales2026": 1845,
   "label": "2026 YTD"
+ },
+ "growth": {
+  "area": "West Norman",
+  "investment": 388863731,
+  "parcels": 62,
+  "projects": 20,
+  "othersCombined": 173177799,
+  "areasTracked": 6,
+  "note": "Tracked development activity, Norman."
+ },
+ "nearby": {
+  "name": "Hollywood",
+  "where": "just south of Hollywood Shopping Center",
+  "year": 2026,
+  "sales": 3,
+  "low": 180000,
+  "high": 315000
  }
 }

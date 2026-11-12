@@ -387,7 +387,7 @@
   };
   const getJSON = (u) => fetch(u, { headers: { accept: "application/json" } })
     .then((r) => (r.ok ? r.json() : null)).catch(() => null);
-  const needsMarket = $("#marketGrid") || $("#reportBody") || $("#homeStat");
+  const needsMarket = $("#marketGrid") || $("#reportBody") || $("#homeStat") || $("#growthStat");
   const marketReady = needsMarket
     ? getJSON("/api/market").then((d) => (d && d.stats && d.stats.length ? d : getJSON("/data/market.json")))
     : Promise.resolve(null);
@@ -453,7 +453,18 @@
     const el = $("#homeStat");
     if (!el || !d || !d.homes) return;
     const h = d.homes, chg = ((h.median2026 - h.median2025) / h.median2025) * 100;
-    el.innerHTML = `<strong>${fmtMoney(h.median2026)}</strong> median home sale in Norman (${esc(h.label)}, ${h.sales2026.toLocaleString()} sales) — ${chg >= 0 ? "up" : "down"} ${Math.abs(chg).toFixed(1)}% from ${fmtMoney(h.median2025)} in 2025. <span class="report-src">Public sale records.</span>`;
+    el.innerHTML = `<strong>${fmtMoney(h.median2026)}</strong> median home sale in Norman (${esc(h.label)}, ${h.sales2026.toLocaleString()} sales) — ${chg >= 0 ? "up" : "down"} ${Math.abs(chg).toFixed(1)}% from ${fmtMoney(h.median2025)} in 2025.`
+      + (d.nearby ? ` Right off the corridor (${esc(d.nearby.where)}), ${d.nearby.sales} homes sold in ${d.nearby.year} for ${fmtMoney(d.nearby.low)}–${fmtMoney(d.nearby.high)}.` : "")
+      + ` <span class="report-src">Public sale records.</span>`;
+    el.hidden = false;
+  });
+
+  // 4) /invest: where Norman is growing (tracked development activity)
+  marketReady.then((d) => {
+    const el = $("#growthStat");
+    if (!el || !d || !d.growth) return;
+    const g = d.growth;
+    el.innerHTML = `<strong>${fmtMoney(g.investment)}</strong> in tracked development across ${g.parcels} parcels makes <strong class="plain">${esc(g.area)}</strong> Norman's #1 growth area, more than the other ${g.areasTracked - 1} tracked areas combined (${fmtMoney(g.othersCombined)}). Lindsey Street runs west from campus to I-35, the doorstep of West Norman. <span class="report-src">Tracked development activity, ${esc(d.period || "")}.</span>`;
     el.hidden = false;
   });
 

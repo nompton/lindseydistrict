@@ -76,7 +76,7 @@ python3 build.py            # re-bake index.html
 git add -A && git commit -m "update listings" && git push   # auto-deploys
 ```
 
-To deploy manually instead: `npx wrangler@4 pages deploy . --project-name=lindseydistrict --branch=main`.
+To deploy manually, use **`./deploy.sh`** — it deploys the committed tree (`git archive HEAD`) only after checking for iCloud-evicted files, a clean pushed HEAD, and a sane bundle (critical files present, 100+ business pages, baked directory, no `name 2.html` conflict copies), then smoke-tests production. Don't run `wrangler pages deploy` by hand.
 The custom domains (`lindseydistrict.com`, `www`) are attached to the Pages project in the Cloudflare dashboard.
 
 > If you edit `index.html` structure by hand, keep the `<!-- …:START/END -->` marker comments intact and

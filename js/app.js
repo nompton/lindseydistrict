@@ -232,6 +232,8 @@
   /* ---------- stats ---------- */
   const totalEl = $("#statTotal");
   if (totalEl) totalEl.textContent = BUSINESSES.length + "+";
+  const investCountEl = $("#investCount");
+  if (investCountEl) investCountEl.textContent = BUSINESSES.length;
   const catEl = $("#statCats");
   if (catEl) catEl.textContent = Object.keys(CATEGORIES).length;
 

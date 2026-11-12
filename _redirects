@@ -1,0 +1,9 @@
+# Cloudflare Pages redirects — removed/renamed business pages.
+/biz/hal-smith-restaurant-coming-soon /#directory 301
+/biz/hal-smith-restaurant-coming-soon.html /#directory 301
+/biz/ray-s-bbq /#directory 301
+/biz/ray-s-bbq.html /#directory 301
+/biz/classic-50-s /biz/classic-50-s-drive-in 301
+/biz/classic-50-s.html /biz/classic-50-s-drive-in 301
+/biz/corkscrew-wine /biz/corkscrew-wine-spirits 301
+/biz/corkscrew-wine.html /biz/corkscrew-wine-spirits 301

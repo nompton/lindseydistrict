@@ -467,6 +467,12 @@ h1, h2, h3 { line-height: 1.05; margin: 0 0 .5rem; }
 }
 .market-value { font-family: var(--font-slab); font-size: 1.9rem; color: var(--charcoal); line-height: 1; }
 .market-unit { font-family: var(--font-body); font-size: .8rem; color: var(--muted); font-weight: 600; margin-left: .25rem; }
+.market-tile.is-long .market-value { font-size: 1.45rem; }
+.market-value { white-space: nowrap; }
+@media (max-width: 560px) {
+  .market-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .market-unit { display: block; margin: .2rem 0 0; }
+}
 .market-label { font-family: var(--font-display); letter-spacing: .06em; text-transform: uppercase; color: var(--teal-dark); font-size: .9rem; margin-top: .45rem; }
 .market-note { font-size: .82rem; color: var(--muted); margin: .9rem 0 0; }
 .market.is-live .market-tile { border-left-color: var(--red); }

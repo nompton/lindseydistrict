@@ -3,19 +3,19 @@
  "source": "snapshot",
  "corridor": "Norman / Cleveland County, OK",
  "period": "Nov 2026",
- "note": "Public records: Cleveland County commercial sales (trailing 36 mo) and City of Norman commercial permits (Sep 2025\u2013Aug 2026, latest available). County-wide figures, not Lindsey-specific lease rates.",
+ "note": "Lindsey office rents & suites: CommercialCafe listing for Lindsey Square and Clarendon Park, updated Oct 20, 2026 (mostly gross + electric; suites 127\u20132,903 sq ft). Permits: City of Norman, Sep 2025\u2013Aug 2026. County sales below: Cleveland County public records.",
  "stats": [
   {
-   "key": "retail_ppsf",
-   "label": "Retail & dining $/sq ft (county)",
-   "unit": "median",
-   "value": "$198"
+   "key": "lindsey_office_rent",
+   "label": "Office asking rent on Lindsey",
+   "unit": "/sq ft/yr",
+   "value": "$14.53\u201320.59"
   },
   {
-   "key": "retail_sales",
-   "label": "Retail & dining, last 12 mo (county)",
-   "unit": "sales",
-   "value": 35
+   "key": "lindsey_office_suites",
+   "label": "Office suites listed on Lindsey",
+   "unit": "available now",
+   "value": 23
   },
   {
    "key": "permits",
@@ -143,5 +143,20 @@
   "sales": 3,
   "low": 180000,
   "high": 315000
- }
+ },
+ "lindseyOffice": {
+  "source": "CommercialCafe listing",
+  "updated": "2026-10-20",
+  "properties": "Lindsey Square (1816\u20131820 W Lindsey) + Clarendon Park (1932 W Lindsey)",
+  "rentLow": 14.53,
+  "rentHigh": 20.59,
+  "basis": "mostly gross + electric",
+  "suites": 23,
+  "sqftTotal": 26387,
+  "sqftMin": 127,
+  "sqftMax": 2903,
+  "sqftMedian": 997,
+  "type": "office"
+ },
+ "periodLabel": "Listings + public records"
 }

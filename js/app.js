@@ -399,13 +399,13 @@
   if (marketGrid) {
     const renderMarket = (d) => {
       marketGrid.innerHTML = (d.stats || []).map((s) => `
-        <div class="market-tile">
+        <div class="market-tile${String(s.value ?? "").length > 8 ? " is-long" : ""}">
           <div class="market-value">${s.value == null || s.value === "" ? "—" : esc(String(s.value))}<span class="market-unit">${esc(s.unit || "")}</span></div>
           <div class="market-label">${esc(s.label)}</div>
         </div>`).join("");
       const note = $("#marketNote"); if (note) note.textContent = d.note || "";
       const per = $("#marketPeriod");
-      if (per) per.textContent = d.source === "live" ? "Live · ATLAS" : d.period ? "Public records · " + d.period : "Powered by ATLAS";
+      if (per) per.textContent = d.source === "live" ? "Live · ATLAS" : d.period ? (d.periodLabel || "Public records") + " · " + d.period : "Powered by ATLAS";
       const wrap = $("#market"); if (wrap) wrap.classList.toggle("is-live", d.source === "live" || d.source === "snapshot");
     };
     renderMarket({ stats: [1, 2, 3, 4].map(() => ({ label: "Loading…", unit: "", value: null })), note: "" });

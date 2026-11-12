@@ -248,6 +248,8 @@ def biz_page_html(b, cats, by_cat, by_center, cat_keys=()):
         ld["address"] = {"@type": "PostalAddress", "streetAddress": addr_short, "addressLocality": "Norman", "addressRegion": "OK"}
     if b.get("phone"): ld["telephone"] = b["phone"]
     if b.get("website"): ld["sameAs"] = [b["website"]]
+    if isinstance(b.get("lat"), (int, float)) and isinstance(b.get("lng"), (int, float)):
+        ld["geo"] = {"@type": "GeoCoordinates", "latitude": b["lat"], "longitude": b["lng"]}
     crumb = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
         {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://lindseydistrict.com/"},
         {"@type": "ListItem", "position": 2, "name": "Directory", "item": "https://lindseydistrict.com/#directory"},

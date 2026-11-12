@@ -28,7 +28,13 @@
     return h;
   }
   function approxCoords(b) {
-    if (typeof b.lat === "number" && typeof b.lng === "number") return [b.lat, b.lng];
+    if (typeof b.lat === "number" && typeof b.lng === "number") {
+      // Geocoded (U.S. Census). Units in the same building share an address point,
+      // so nudge each by up to ~10 m (deterministic per name) to keep every pin clickable.
+      const h = hashStr(b.name);
+      return [b.lat + ((h % 100) / 100 - 0.5) * 0.00018,
+              b.lng + ((Math.floor(h / 100) % 100) / 100 - 0.5) * 0.00022];
+    }
     const a = String(b.address || "");
     const m = a.match(/(\d{3,4})/);
     if (!m) return null;

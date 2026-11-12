@@ -53,8 +53,11 @@ the lead section in `js/app.js` (`LEAD_ENDPOINT`, `GRID_SITE_KEY`).
 
 ## The map
 
-Pins are placed **automatically from each business's street address** (approximate). To pin one exactly, add
-`"lat": 35.2054, "lng": -97.4620` to it (right-click the spot in Google Maps to get coordinates).
+Every business has real coordinates (`lat`/`lng` in `js/data.js`) from the **U.S. Census Bureau geocoder**.
+After adding businesses, run **`python3 geocode.py`** (fills in only the missing ones; `--all` redoes everything),
+then `python3 build.py`. It validates each result (must land in the Lindsey area and keep the street direction —
+the Census matcher sometimes turns W Lindsey into E Lindsey) and interpolates rejects from same-block neighbors.
+Anything without coordinates falls back to an approximate pin. You can also set `lat`/`lng` by hand.
 Uses **Leaflet + OpenStreetMap** (free, no API key).
 
 ## Build & deploy (Cloudflare Pages)

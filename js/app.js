@@ -376,22 +376,25 @@
     }
   }
 
-  /* ---------- ATLAS market snapshot (Lease Space section) ----------
-     Fetches /api/market (a Cloudflare Pages Function that proxies GRID's ATLAS
-     data server-side). Shows a labeled skeleton with "—" until real data is
-     wired, then live values. Never renders fabricated market numbers. */
+  /* ---------- market data (snapshot tiles, report charts, home stat) ----------
+     One fetch of /api/market (Pages Function: ATLAS live if configured, else the
+     committed public-records snapshot). Falls back to /data/market.json for local
+     preview. Everything is labeled with its source + date; nothing is invented. */
+  const fmtMoney = (n) => n >= 1e6 ? "$" + (n / 1e6).toFixed(1) + "M" : n >= 1e3 ? "$" + Math.round(n / 1e3) + "K" : "$" + n;
+  const monthName = (ym) => {
+    const [y, m] = ym.split("-").map(Number);
+    return new Date(y, m - 1, 1).toLocaleString("en-US", { month: "short" }) + " " + y;
+  };
+  const getJSON = (u) => fetch(u, { headers: { accept: "application/json" } })
+    .then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  const needsMarket = $("#marketGrid") || $("#reportBody") || $("#homeStat");
+  const marketReady = needsMarket
+    ? getJSON("/api/market").then((d) => (d && d.stats && d.stats.length ? d : getJSON("/data/market.json")))
+    : Promise.resolve(null);
+
+  // 1) snapshot tiles (Lease Space section + /invest)
   const marketGrid = $("#marketGrid");
   if (marketGrid) {
-    const fallback = {
-      source: "placeholder", period: "",
-      stats: [
-        { label: "Avg asking lease",   unit: "/sq ft/yr", value: null },
-        { label: "Vacancy rate",       unit: "%",         value: null },
-        { label: "Spaces available",   unit: "",          value: null },
-        { label: "Avg days on market", unit: "days",      value: null },
-      ],
-      note: "Live ATLAS market data coming soon.",
-    };
     const renderMarket = (d) => {
       marketGrid.innerHTML = (d.stats || []).map((s) => `
         <div class="market-tile">
@@ -400,15 +403,59 @@
         </div>`).join("");
       const note = $("#marketNote"); if (note) note.textContent = d.note || "";
       const per = $("#marketPeriod");
-      if (per) per.textContent = d.source === "live" && d.period ? "As of " + d.period : "Powered by ATLAS";
-      const wrap = $("#market"); if (wrap) wrap.classList.toggle("is-live", d.source === "live");
+      if (per) per.textContent = d.source === "live" ? "Live · ATLAS" : d.period ? "Public records · " + d.period : "Powered by ATLAS";
+      const wrap = $("#market"); if (wrap) wrap.classList.toggle("is-live", d.source === "live" || d.source === "snapshot");
     };
-    renderMarket(fallback); // paint the skeleton immediately
-    fetch("/api/market", { headers: { accept: "application/json" } })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (d && d.stats) renderMarket(d); })
-      .catch(() => { /* keep skeleton (e.g. local preview without functions) */ });
+    renderMarket({ stats: [1, 2, 3, 4].map(() => ({ label: "Loading…", unit: "", value: null })), note: "" });
+    marketReady.then((d) => { if (d && d.stats && d.stats.length) renderMarket(d); });
   }
+
+  // 2) report: property-type $/sq ft + monthly permit value (single-series charts)
+  marketReady.then((d) => {
+    const body = $("#reportBody");
+    if (!body || !d || !d.propertyTypes || !d.permitsMonthly || !d.permitsMonthly.length) return;
+    const maxP = Math.max(...d.propertyTypes.map((t) => t.ppsf));
+    const types = d.propertyTypes.map((t) => `
+      <div class="mix-row" title="${esc(t.label)}: $${t.ppsf}/sq ft median · ${t.sales12} sales in last 12 mo">
+        <div class="mix-label">${esc(t.label)}</div>
+        <div class="mix-track"><div class="mix-bar" style="width:${Math.round((t.ppsf / maxP) * 100)}%"></div></div>
+        <div class="mix-count">$${t.ppsf}</div>
+      </div>`).join("");
+    const pm = d.permitsMonthly;
+    const maxV = Math.max(...pm.map((m) => m.valuation), 1);
+    const peak = pm.reduce((a, b) => (b.valuation > a.valuation ? b : a), pm[0]);
+    const cols = pm.map((m) => {
+      const tip = `${monthName(m.month)} · ${m.permits} permits · ${fmtMoney(m.valuation)}`;
+      return `<div class="col" tabindex="0" data-tip="${esc(tip)}" aria-label="${esc(tip)}">
+        ${m === peak ? `<span class="col-val">${fmtMoney(m.valuation)}</span>` : ""}
+        <span class="col-bar" style="height:${Math.max(2, Math.round((m.valuation / maxV) * 100))}%"></span>
+        <span class="col-x">${monthName(m.month).split(" ")[0]}</span></div>`;
+    }).join("");
+    const table = `<table class="sr-only"><caption>Norman commercial permits by month</caption>
+      <tr><th>Month</th><th>Permits</th><th>Value</th></tr>${pm.map((m) =>
+        `<tr><td>${monthName(m.month)}</td><td>${m.permits}</td><td>${fmtMoney(m.valuation)}</td></tr>`).join("")}</table>`;
+    const html = `
+      <div class="report-market">
+        <h3 class="report-sub">Cleveland County commercial sales — median $/sq ft</h3>
+        <div class="mix">${types}</div>
+        <p class="report-src">Public sale records, trailing 36 months.</p>
+        <h3 class="report-sub" style="margin-top:1.6rem">Norman commercial construction — permitted value by month</h3>
+        <div class="cols" role="img" aria-label="Monthly permitted commercial construction value in Norman, ${monthName(pm[0].month)} to ${monthName(pm[pm.length - 1].month)}">${cols}</div>
+        ${table}
+        <p class="report-src">City of Norman commercial permits through ${monthName(d.permitsLatestMonth || pm[pm.length - 1].month)} (latest published). Hover a bar for details.</p>
+      </div>`;
+    const more = body.querySelector(".report-more");
+    if (more) more.insertAdjacentHTML("beforebegin", html); else body.insertAdjacentHTML("beforeend", html);
+  });
+
+  // 3) "Live Here": real Norman home-price context
+  marketReady.then((d) => {
+    const el = $("#homeStat");
+    if (!el || !d || !d.homes) return;
+    const h = d.homes, chg = ((h.median2026 - h.median2025) / h.median2025) * 100;
+    el.innerHTML = `<strong>${fmtMoney(h.median2026)}</strong> median home sale in Norman (${esc(h.label)}, ${h.sales2026.toLocaleString()} sales) — ${chg >= 0 ? "up" : "down"} ${Math.abs(chg).toFixed(1)}% from ${fmtMoney(h.median2025)} in 2025. <span class="report-src">Public sale records.</span>`;
+    el.hidden = false;
+  });
 
   /* ---------- footer year ---------- */
   const yr = $("#year");

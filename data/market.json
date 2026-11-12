@@ -1,0 +1,130 @@
+{
+ "asOf": "2026-11-11",
+ "source": "snapshot",
+ "corridor": "Norman / Cleveland County, OK",
+ "period": "Nov 2026",
+ "note": "Public records: Cleveland County commercial sales (trailing 36 mo) and City of Norman commercial permits (Sep 2025\u2013Aug 2026, latest available). County-wide figures, not Lindsey-specific lease rates.",
+ "stats": [
+  {
+   "key": "retail_ppsf",
+   "label": "Retail & dining $/sq ft (county)",
+   "unit": "median",
+   "value": "$198"
+  },
+  {
+   "key": "retail_sales",
+   "label": "Retail & dining, last 12 mo (county)",
+   "unit": "sales",
+   "value": 35
+  },
+  {
+   "key": "permits",
+   "label": "Norman commercial permits",
+   "unit": "12 mo",
+   "value": 175
+  },
+  {
+   "key": "permit_value",
+   "label": "Permitted construction value",
+   "unit": "12 mo",
+   "value": "$108.0M"
+  }
+ ],
+ "propertyTypes": [
+  {
+   "label": "Multifamily",
+   "ppsf": 245,
+   "sales12": 26
+  },
+  {
+   "label": "Retail & Dining",
+   "ppsf": 198,
+   "sales12": 35
+  },
+  {
+   "label": "Office",
+   "ppsf": 195,
+   "sales12": 23
+  },
+  {
+   "label": "Hospitality",
+   "ppsf": 127,
+   "sales12": 3
+  },
+  {
+   "label": "Industrial & Auto",
+   "ppsf": 121,
+   "sales12": 26
+  }
+ ],
+ "permitsMonthly": [
+  {
+   "month": "2025-09",
+   "permits": 10,
+   "valuation": 3663928
+  },
+  {
+   "month": "2025-10",
+   "permits": 16,
+   "valuation": 33020564
+  },
+  {
+   "month": "2025-11",
+   "permits": 8,
+   "valuation": 954750
+  },
+  {
+   "month": "2025-12",
+   "permits": 11,
+   "valuation": 3197262
+  },
+  {
+   "month": "2026-01",
+   "permits": 17,
+   "valuation": 7545565
+  },
+  {
+   "month": "2026-02",
+   "permits": 14,
+   "valuation": 9951695
+  },
+  {
+   "month": "2026-03",
+   "permits": 11,
+   "valuation": 5263490
+  },
+  {
+   "month": "2026-04",
+   "permits": 11,
+   "valuation": 8310166
+  },
+  {
+   "month": "2026-05",
+   "permits": 22,
+   "valuation": 20301175
+  },
+  {
+   "month": "2026-06",
+   "permits": 31,
+   "valuation": 11834950
+  },
+  {
+   "month": "2026-07",
+   "permits": 11,
+   "valuation": 1382500
+  },
+  {
+   "month": "2026-08",
+   "permits": 13,
+   "valuation": 2594263
+  }
+ ],
+ "permitsLatestMonth": "2026-08",
+ "homes": {
+  "city": "Norman",
+  "median2026": 265000,
+  "median2025": 251000,
+  "sales2026": 1845,
+  "label": "2026 YTD"
+ }
+}

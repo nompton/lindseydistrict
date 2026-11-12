@@ -99,6 +99,17 @@ widget shows a "— / live data coming soon" state (no fabricated numbers).
 
 The front-end lives in `index.html` (`#market`) + `js/app.js` (fetch/render) + `css/styles.css` (`.market*`).
 
+## Market data snapshot (`data/market.json`)
+
+Until ATLAS is wired live, `/api/market` serves a committed, dated snapshot of **public records**:
+Cleveland County commercial sales by property type (median $/sq ft, sales counts), City of Norman
+commercial permits by month, and Norman median home sale price. It powers the snapshot tiles
+(Lease Space + `/invest`), the charts in the gated market report, and the home-price callout in
+"Live Here". Every figure is labeled with its source and date, and these are county/city-wide
+figures, not Lindsey-specific lease rates or vacancy. To refresh, update `data/market.json`
+(keep the same shape; bump `asOf`/`period`) and push. If `ATLAS_API_URL` is set, the function
+uses ATLAS instead.
+
 ## Local preview
 
 ```bash

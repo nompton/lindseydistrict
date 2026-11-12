@@ -1,66 +1,44 @@
 /**
- * GET /api/market — Lindsey Street corridor market snapshot.
+ * GET /api/market — Norman / Lindsey corridor market data.
  *
- * Cloudflare Pages Function. Proxies GRID's ATLAS market data SERVER-SIDE so the
- * API key never reaches the browser. Returns a stable JSON shape the front-end
- * widget renders.
- *
- * To go live, set these in the Pages project (Settings → Environment variables,
- * or `npx wrangler pages secret put ATLAS_API_KEY`):
- *   ATLAS_API_URL  – the ATLAS endpoint returning Lindsey-corridor stats
- *   ATLAS_API_KEY  – bearer token (optional, if ATLAS needs auth)
- * Then map ATLAS's fields to `stats` in the TODO below and flip source → "live".
- *
- * Until configured it returns source:"placeholder" with null values, and the
- * widget shows a tasteful "live market data coming soon" state (no fake numbers).
+ * Order of precedence:
+ *   1. ATLAS live (if ATLAS_API_URL is set in the Pages env) — proxied
+ *      server-side so the API key never reaches the browser. Map its fields in
+ *      the TODO below and set source = "live".
+ *   2. The committed public-records snapshot at /data/market.json
+ *      (source = "snapshot", dated). Refresh that file to update the numbers.
  */
-export async function onRequestGet({ env }) {
-  const snapshot = {
-    corridor: "W Lindsey St · Norman, OK",
-    period: "",
-    source: "placeholder",
-    stats: [
-      { key: "lease",   label: "Avg asking lease",   unit: "/sq ft/yr", value: null },
-      { key: "vacancy", label: "Vacancy rate",       unit: "%",         value: null },
-      { key: "avail",   label: "Spaces available",   unit: "",          value: null },
-      { key: "dom",     label: "Avg days on market", unit: "days",      value: null },
-    ],
-    note: "Live ATLAS market data coming soon.",
-  };
+export async function onRequestGet({ env, request }) {
+  const snapshot = await loadSnapshot(env, request);
 
-  const url = env && env.ATLAS_API_URL;
-  if (url) {
+  if (env && env.ATLAS_API_URL) {
     try {
-      const res = await fetch(url, {
+      const res = await fetch(env.ATLAS_API_URL, {
         headers: env.ATLAS_API_KEY ? { Authorization: `Bearer ${env.ATLAS_API_KEY}` } : {},
-        cf: { cacheTtl: 1800, cacheEverything: true }, // edge-cache 30 min
+        cf: { cacheTtl: 1800, cacheEverything: true },
       });
       if (res.ok) {
         const d = await res.json();
-        // TODO: map ATLAS response → stats (field names below are placeholders):
-        //   snapshot.stats[0].value = d.avg_lease_rate;      // e.g. "18–24"
-        //   snapshot.stats[1].value = d.vacancy_rate;        // e.g. 7.4
-        //   snapshot.stats[2].value = d.available_spaces;    // e.g. 12
-        //   snapshot.stats[3].value = d.avg_days_on_market;  // e.g. 96
-        //   snapshot.period = d.period;                      // e.g. "Oct 2026"
-        //   snapshot.source = "live";
-        //   snapshot.note   = "";
-        // Until the mapping is filled in, surface the raw payload for wiring:
-        return json({ ...snapshot, note: "ATLAS reached — map fields in functions/api/market.js", _atlas: d });
+        // TODO: map ATLAS fields onto snapshot.stats, set snapshot.period,
+        // then snapshot.source = "live". Until then, expose the raw payload.
+        return json({ ...snapshot, _atlas: d });
       }
-    } catch (_) {
-      // fall through to placeholder
-    }
+    } catch (_) { /* fall through to snapshot */ }
   }
 
   return json(snapshot);
 }
 
+async function loadSnapshot(env, request) {
+  try {
+    const res = await env.ASSETS.fetch(new URL("/data/market.json", request.url));
+    if (res.ok) return await res.json();
+  } catch (_) { /* fall through */ }
+  return { source: "placeholder", period: "", stats: [], note: "Market data unavailable." };
+}
+
 function json(obj) {
   return new Response(JSON.stringify(obj), {
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      "cache-control": "public, max-age=900",
-    },
+    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "public, max-age=900" },
   });
 }

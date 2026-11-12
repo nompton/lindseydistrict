@@ -18,7 +18,7 @@ import os, re, sys, json, html, shutil, subprocess, http.server, socketserver, t
 from urllib.parse import quote
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-PORT = 8799
+PORT = 0  # 0 = let the OS pick a free port (avoids clashing with wrangler dev, etc.)
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 def log(m): print(f"[build] {m}")
@@ -76,7 +76,7 @@ window.addEventListener('load', function () {
         log("rendering with headless Chrome…")
         dump = subprocess.run(
             [CHROME, "--headless=new", "--disable-gpu", "--virtual-time-budget=8000",
-             "--dump-dom", f"http://127.0.0.1:{PORT}/__pre.html"],
+             "--dump-dom", f"http://127.0.0.1:{httpd.server_address[1]}/__pre.html"],
             capture_output=True, text=True, timeout=90).stdout
     finally:
         httpd.shutdown(); os.remove(tmp)

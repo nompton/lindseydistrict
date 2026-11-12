@@ -114,7 +114,10 @@ window.addEventListener('load', function () {
 # ---- business detail pages + sitemap -------------------------------------
 
 def slug(name):
-    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+    # Must match slug() in js/app.js. Accents are stripped, not dropped (ñ -> n).
+    import unicodedata
+    ascii_name = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]+", "-", ascii_name.lower()).strip("-")
 
 def parse_data():
     s = open(os.path.join(ROOT, "js", "data.js")).read()

@@ -13,7 +13,7 @@
 
   // Business → page slug. MUST match the slug() in build.py (same algorithm).
   const slug = (name) =>
-    String(name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    String(name).normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
   /* ---------- approximate geocoding along W Lindsey St ----------
      The district runs roughly east-west along W Lindsey Street.

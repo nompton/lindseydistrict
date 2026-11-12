@@ -107,6 +107,7 @@ window.addEventListener('load', function () {
     log(f"baked into index.html ({len(out)//1024} KB).")
 
     generate_biz_pages()
+    generate_category_pages()
     stamp_assets()
     log("done. Commit + push to deploy.")
 
@@ -167,7 +168,30 @@ if(t&&l){t.addEventListener('click',function(){var o=l.classList.toggle('open');
 var b=document.getElementById('toTop');if(b){addEventListener('scroll',function(){b.classList.toggle('show',scrollY>700);},{passive:true});b.addEventListener('click',function(){scrollTo({top:0,behavior:'smooth'});});}})();
 </script>"""
 
-def biz_page_html(b, cats, by_cat, by_center):
+# ---- category landing pages (SEO) -----------------------------------------
+# One page per category with at least MIN_CATEGORY_SIZE businesses; smaller
+# categories would be thin content. Slugs are stable public URLs.
+MIN_CATEGORY_SIZE = 3
+CATEGORY_PAGES = {
+    "food":    {"slug": "restaurants",   "h1": "Restaurants & Food on Lindsey Street",    "blurb": "Restaurants, drive-ins, coffee, tea, and quick bites."},
+    "service": {"slug": "services",      "h1": "Services on Lindsey Street",              "blurb": "Insurance, real estate, legal, tax, repair, wireless, and other everyday services."},
+    "beauty":  {"slug": "health-beauty", "h1": "Health & Beauty on Lindsey Street",       "blurb": "Salons, barbers, nails, massage, dental, pharmacy, and urgent care."},
+    "shop":    {"slug": "shops",         "h1": "Shops on Lindsey Street",                 "blurb": "Grocery, discount, thrift, specialty, and seasonal shops."},
+    "auto":    {"slug": "auto",          "h1": "Auto Repair & Service on Lindsey Street", "blurb": "Tires, oil changes, repair, parts, and fuel."},
+    "bank":    {"slug": "banks",         "h1": "Banks & Lenders on Lindsey Street",       "blurb": "Banks, credit unions, and consumer lenders."},
+    "smoke":   {"slug": "smoke-vape",    "h1": "Smoke & Vape Shops on Lindsey Street",    "blurb": "Vape, CBD, and dispensaries."},
+    "gym":     {"slug": "fitness",       "h1": "Gyms & Fitness on Lindsey Street",        "blurb": "Gyms and training studios."},
+}
+
+def category_page_keys(businesses):
+    counts = {}
+    for b in businesses: counts[b["category"]] = counts.get(b["category"], 0) + 1
+    return [k for k in CATEGORY_PAGES if counts.get(k, 0) >= MIN_CATEGORY_SIZE]
+
+def category_url(key):
+    return f"/category/{CATEGORY_PAGES[key]['slug']}.html"
+
+def biz_page_html(b, cats, by_cat, by_center, cat_keys=()):
     cat = cats.get(b["category"], {"label": b["category"], "emoji": "📍"})
     name = b["name"]; addr = b.get("address", "")
     addr_short = re.sub(r",\s*Norman,\s*OK$", "", addr)
@@ -227,8 +251,9 @@ def biz_page_html(b, cats, by_cat, by_center):
     crumb = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
         {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://lindseydistrict.com/"},
         {"@type": "ListItem", "position": 2, "name": "Directory", "item": "https://lindseydistrict.com/#directory"},
-        {"@type": "ListItem", "position": 3, "name": name},
-    ]}
+    ] + ([{"@type": "ListItem", "position": 3, "name": cat["label"], "item": "https://lindseydistrict.com" + category_url(b["category"])},
+          {"@type": "ListItem", "position": 4, "name": name}] if b["category"] in cat_keys else
+         [{"@type": "ListItem", "position": 3, "name": name}])}
 
     claim = f'/submit.html?business={quote(name)}&category={quote(cat["label"])}'
 
@@ -263,7 +288,7 @@ def biz_page_html(b, cats, by_cat, by_center):
 <body>
 {BIZ_HEADER}
 <section class="section wrap">
-  <nav class="crumbs"><a href="/">Home</a> / <a href="/#directory">Directory</a> / <span>{esc(cat['label'])}</span></nav>
+  <nav class="crumbs"><a href="/">Home</a> / <a href="/#directory">Directory</a> / {(f'<a href="{category_url(b["category"])}">' + esc(cat['label']) + '</a>') if b["category"] in cat_keys else '<span>' + esc(cat['label']) + '</span>'}</nav>
   <p class="eyebrow">{cat['emoji']} {esc(cat['label'])}</p>
   <h1 class="biz-name">{esc(name)}</h1>
   <div class="biz-meta">{''.join(meta)}</div>
@@ -286,23 +311,103 @@ def generate_biz_pages():
         if b.get("center"):
             by_center.setdefault(b["center"], []).append(b)
 
+    cat_keys = category_page_keys(businesses)
     bizdir = os.path.join(ROOT, "biz")
     if os.path.exists(bizdir): shutil.rmtree(bizdir)
     os.makedirs(bizdir)
     for b in businesses:
         open(os.path.join(bizdir, slug(b["name"]) + ".html"), "w").write(
-            biz_page_html(b, cats, by_cat, by_center))
+            biz_page_html(b, cats, by_cat, by_center, cat_keys))
     log(f"generated {len(businesses)} business pages in /biz")
 
     # sitemap: static pages + every business page
     urls = [("https://lindseydistrict.com/", "weekly", "1.0"),
             ("https://lindseydistrict.com/invest.html", "weekly", "0.8"),
             ("https://lindseydistrict.com/submit.html", "monthly", "0.5")]
+    urls += [(f"https://lindseydistrict.com{category_url(k)}", "weekly", "0.7") for k in cat_keys]
     urls += [(f"https://lindseydistrict.com/biz/{slug(b['name'])}.html", "monthly", "0.5") for b in businesses]
     body = "\n".join(f"  <url><loc>{u}</loc><changefreq>{c}</changefreq><priority>{p}</priority></url>" for u, c, p in urls)
     open(os.path.join(ROOT, "sitemap.xml"), "w").write(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + "\n</urlset>\n")
     log(f"wrote sitemap.xml ({len(urls)} urls)")
+
+
+def category_page_html(key, items, cats, cat_keys):
+    c = CATEGORY_PAGES[key]; cat = cats.get(key, {"label": key, "emoji": ""})
+    url = "https://lindseydistrict.com" + category_url(key)
+    n = len(items)
+    title = f"{c['h1']}, Norman OK"
+    names = ", ".join(x["name"] for x in items[:4])
+    desc = f"{n} {cat['label'].lower()} businesses along W Lindsey Street in Norman, OK, including {names}."
+    cards = []
+    for x in items:
+        sub = re.sub(r",\s*Norman,\s*OK$", "", x.get("address", ""))
+        if x.get("center"): sub += f" · {x['center']}"
+        tel = re.sub(r"[^0-9+]", "", x.get("phone", ""))
+        phone = f'<span class="ra"><a href="tel:{esc(tel)}">{esc(x["phone"])}</a></span>' if x.get("phone") else ""
+        fav = ' <span class="cat-fav">★ Local Favorite</span>' if x.get("featured") else ""
+        cards.append(f'<div class="biz-related-card"><a href="/biz/{slug(x["name"])}.html">{esc(x["name"])}</a>{fav}'
+                     f'<span class="ra">{esc(sub)}</span>{phone}</div>')
+    others = " · ".join(f'<a href="{category_url(k)}">{esc(cats.get(k, {}).get("label", k))}</a>' for k in cat_keys if k != key)
+    ld_list = {"@context": "https://schema.org", "@type": "ItemList", "name": c["h1"], "numberOfItems": n,
+               "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"https://lindseydistrict.com/biz/{slug(x['name'])}.html", "name": x["name"]} for i, x in enumerate(items)]}
+    ld_crumb = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://lindseydistrict.com/"},
+        {"@type": "ListItem", "position": 2, "name": "Directory", "item": "https://lindseydistrict.com/#directory"},
+        {"@type": "ListItem", "position": 3, "name": cat["label"]}]}
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{esc(title)} | Lindsey Street District</title>
+<meta name="description" content="{esc(desc)}">
+<link rel="canonical" href="{url}">
+<meta property="og:title" content="{esc(c['h1'])}">
+<meta property="og:description" content="{esc(desc)}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{url}">
+<meta property="og:image" content="https://lindseydistrict.com/assets/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://lindseydistrict.com/assets/og-card.png">
+<meta name="theme-color" content="#141414">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700&family=Yellowtail&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css">
+<script type="application/ld+json">{json.dumps(ld_list, ensure_ascii=False)}</script>
+<script type="application/ld+json">{json.dumps(ld_crumb, ensure_ascii=False)}</script>
+</head>
+<body>
+{BIZ_HEADER}
+<section class="section wrap">
+  <nav class="crumbs"><a href="/">Home</a> / <a href="/#directory">Directory</a> / <span>{esc(cat['label'])}</span></nav>
+  <p class="eyebrow">{cat.get('emoji', '')} {esc(cat['label'])}</p>
+  <h1 class="biz-name">{esc(c['h1'])}</h1>
+  <p class="biz-intro">{esc(c['blurb'])} {n} businesses along W Lindsey Street in Norman, Oklahoma, from the OU campus west to I-35.</p>
+  <div class="biz-related-grid cat-grid">{''.join(cards)}</div>
+  <div class="biz-claim">Run a {esc(cat['label'].lower())} business on Lindsey that's missing or out of date here? <a href="/submit.html">List or update it free →</a></div>
+  <p class="cat-links">More on Lindsey Street: {others}</p>
+  <a class="biz-back" href="/#directory">← Back to the full directory</a>
+</section>
+{BIZ_FOOTER}
+</body>
+</html>"""
+
+def generate_category_pages():
+    businesses, cats = parse_data()
+    keys = category_page_keys(businesses)
+    outdir = os.path.join(ROOT, "category")
+    if os.path.exists(outdir): shutil.rmtree(outdir)
+    os.makedirs(outdir)
+    for k in keys:
+        items = sorted([b for b in businesses if b["category"] == k], key=lambda b: (not b.get("featured"), b["name"].lower()))
+        open(os.path.join(outdir, CATEGORY_PAGES[k]["slug"] + ".html"), "w").write(category_page_html(k, items, cats, keys))
+    log(f"generated {len(keys)} category pages in /category")
 
 
 # ---- cache-busting: fingerprint CSS/JS references --------------------------
@@ -319,9 +424,10 @@ def stamp_assets():
     hashes = {a: asset_hash(a) for a in ASSETS}
     pat = re.compile(r'((?:href|src)=")(/?)(' + "|".join(re.escape(a) for a in ASSETS) + r')(?:\?v=[0-9a-f]+)?(")')
     files = [os.path.join(ROOT, f) for f in ("index.html", "invest.html", "submit.html", "404.html")]
-    bizdir = os.path.join(ROOT, "biz")
-    if os.path.isdir(bizdir):
-        files += [os.path.join(bizdir, f) for f in os.listdir(bizdir) if f.endswith(".html")]
+    for sub in ("biz", "category"):
+        d = os.path.join(ROOT, sub)
+        if os.path.isdir(d):
+            files += [os.path.join(d, f) for f in os.listdir(d) if f.endswith(".html")]
     n = 0
     for f in files:
         if not os.path.exists(f): continue

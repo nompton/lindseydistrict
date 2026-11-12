@@ -259,6 +259,12 @@ h1, h2, h3 { line-height: 1.05; margin: 0 0 .5rem; }
 .card-meta .row svg { width: 15px; height: 15px; color: var(--teal-dark); flex: none; }
 .card-links { display: flex; gap: .6rem; margin-top: .4rem; flex-wrap: wrap; }
 .card-links a { font-family: var(--font-display); letter-spacing: .05em; text-transform: uppercase; font-size: .95rem; color: var(--red-dark); }
+.cat-browse { margin: 1.6rem 0 0; font-size: .95rem; line-height: 1.9; }
+.cat-browse a { font-weight: 600; white-space: nowrap; }
+.cat-grid { margin: 1.6rem 0 0; }
+.cat-fav { white-space: nowrap; display: inline-block; font-family: var(--font-display); letter-spacing: .06em; font-size: .72rem; background: var(--gold); color: var(--charcoal); padding: 1px 7px; border-radius: 999px; margin-left: .3rem; vertical-align: middle; }
+.cat-links { margin: 1.6rem 0 0; font-size: .95rem; line-height: 1.9; }
+.cat-links a { font-weight: 600; white-space: nowrap; }
 .dir-note { margin: 1.4rem 0 0; font-size: .88rem; color: var(--muted); }
 .dir-note a { font-weight: 600; }
 .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 1.1rem; grid-column: 1/-1; }

@@ -189,7 +189,9 @@ def category_page_keys(businesses):
     return [k for k in CATEGORY_PAGES if counts.get(k, 0) >= MIN_CATEGORY_SIZE]
 
 def category_url(key):
-    return f"/category/{CATEGORY_PAGES[key]['slug']}.html"
+    # Extensionless: Cloudflare Pages 308-redirects /x.html → /x, so canonicals,
+    # sitemap and links must use the final URL (the FILE is still <slug>.html).
+    return f"/category/{CATEGORY_PAGES[key]['slug']}"
 
 def biz_page_html(b, cats, by_cat, by_center, cat_keys=()):
     cat = cats.get(b["category"], {"label": b["category"], "emoji": "📍"})
@@ -242,7 +244,7 @@ def biz_page_html(b, cats, by_cat, by_center, cat_keys=()):
 
     ld = {
         "@context": "https://schema.org", "@type": "LocalBusiness", "name": name,
-        "url": f"https://lindseydistrict.com/biz/{slug(name)}.html",
+        "url": f"https://lindseydistrict.com/biz/{slug(name)}",
     }
     if addr:
         ld["address"] = {"@type": "PostalAddress", "streetAddress": addr_short, "addressLocality": "Norman", "addressRegion": "OK"}
@@ -266,12 +268,12 @@ def biz_page_html(b, cats, by_cat, by_center, cat_keys=()):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(desc)}">
-<link rel="canonical" href="https://lindseydistrict.com/biz/{slug(name)}.html">
+<link rel="canonical" href="https://lindseydistrict.com/biz/{slug(name)}">
 <meta name="robots" content="index, follow">
 <meta property="og:title" content="{esc(name)} — Lindsey Street District">
 <meta property="og:description" content="{esc(desc)}">
 <meta property="og:type" content="business.business">
-<meta property="og:url" content="https://lindseydistrict.com/biz/{slug(name)}.html">
+<meta property="og:url" content="https://lindseydistrict.com/biz/{slug(name)}">
 <meta property="og:image" content="https://lindseydistrict.com/assets/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -324,10 +326,10 @@ def generate_biz_pages():
 
     # sitemap: static pages + every business page
     urls = [("https://lindseydistrict.com/", "weekly", "1.0"),
-            ("https://lindseydistrict.com/invest.html", "weekly", "0.8"),
-            ("https://lindseydistrict.com/submit.html", "monthly", "0.5")]
+            ("https://lindseydistrict.com/invest", "weekly", "0.8"),
+            ("https://lindseydistrict.com/submit", "monthly", "0.5")]
     urls += [(f"https://lindseydistrict.com{category_url(k)}", "weekly", "0.7") for k in cat_keys]
-    urls += [(f"https://lindseydistrict.com/biz/{slug(b['name'])}.html", "monthly", "0.5") for b in businesses]
+    urls += [(f"https://lindseydistrict.com/biz/{slug(b['name'])}", "monthly", "0.5") for b in businesses]
     body = "\n".join(f"  <url><loc>{u}</loc><changefreq>{c}</changefreq><priority>{p}</priority></url>" for u, c, p in urls)
     open(os.path.join(ROOT, "sitemap.xml"), "w").write(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + "\n</urlset>\n")
@@ -352,7 +354,7 @@ def category_page_html(key, items, cats, cat_keys):
                      f'<span class="ra">{esc(sub)}</span>{phone}</div>')
     others = " · ".join(f'<a href="{category_url(k)}">{esc(cats.get(k, {}).get("label", k))}</a>' for k in cat_keys if k != key)
     ld_list = {"@context": "https://schema.org", "@type": "ItemList", "name": c["h1"], "numberOfItems": n,
-               "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"https://lindseydistrict.com/biz/{slug(x['name'])}.html", "name": x["name"]} for i, x in enumerate(items)]}
+               "itemListElement": [{"@type": "ListItem", "position": i + 1, "url": f"https://lindseydistrict.com/biz/{slug(x['name'])}", "name": x["name"]} for i, x in enumerate(items)]}
     ld_crumb = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
         {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://lindseydistrict.com/"},
         {"@type": "ListItem", "position": 2, "name": "Directory", "item": "https://lindseydistrict.com/#directory"},
